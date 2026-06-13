@@ -8,422 +8,370 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-  :root {
-    --bg: #0a0805;
-    --cream: #f5e6c8;
-    --gold: #c9a84c;
-    --gold-muted: #8a7a5a;
-    --gold-dim: rgba(201,168,76,0.15);
-  }
+:root {
+  --bg:       #0a0805;
+  --cream:    #f5e6c8;
+  --gold:     #c9a84c;
+  --gold-mid: #8a7a5a;
+  --gold-dim: rgba(201,168,76,0.08);
+}
 
-  html { scroll-behavior: auto; }
+html { scroll-behavior: auto; }
 
-  body {
-    background: var(--bg);
-    color: var(--cream);
-    font-family: 'Cormorant Garamond', Georgia, serif;
-    overflow-x: hidden;
-    cursor: none;
-  }
+body {
+  background: var(--bg);
+  color: var(--cream);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  overflow-x: hidden;
+  cursor: none;
+}
 
-  /* Custom cursor */
-  .cursor {
-    position: fixed;
-    width: 8px; height: 8px;
-    background: var(--gold);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9999;
-    transform: translate(-50%,-50%);
-    transition: opacity 0.3s;
-    mix-blend-mode: screen;
-  }
-  .cursor-ring {
-    position: fixed;
-    width: 36px; height: 36px;
-    border: 1px solid rgba(201,168,76,0.5);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9998;
-    transform: translate(-50%,-50%);
-    transition: width 0.3s, height 0.3s, border-color 0.3s;
-  }
+/* ── TRANSITION OVERLAY ── */
+#transition-overlay {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 900;
+}
 
-  /* NAV */
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    padding: 28px 60px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    mix-blend-mode: normal;
-  }
-  nav::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, rgba(10,8,5,0.95) 0%, transparent 100%);
-    pointer-events: none;
-  }
-  .nav-logo {
-    font-size: 0.72rem;
-    letter-spacing: 0.35em;
-    color: var(--gold);
-    text-transform: uppercase;
-    font-weight: 400;
-    position: relative;
-  }
-  .nav-links {
-    display: flex;
-    gap: 48px;
-    list-style: none;
-    position: relative;
-  }
-  .nav-links a {
-    font-size: 0.68rem;
-    letter-spacing: 0.3em;
-    color: var(--gold-muted);
-    text-decoration: none;
-    text-transform: uppercase;
-    transition: color 0.4s;
-  }
-  .nav-links a:hover { color: var(--cream); }
+/* ── CURSOR ── */
+.cursor {
+  position: fixed; width: 7px; height: 7px;
+  background: var(--gold); border-radius: 50%;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%,-50%);
+  mix-blend-mode: screen;
+}
+.cursor-ring {
+  position: fixed; width: 38px; height: 38px;
+  border: 1px solid rgba(201,168,76,0.45);
+  border-radius: 50%; pointer-events: none; z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: width .3s, height .3s, border-color .3s;
+}
 
-  /* ── HERO ── */
-  #hero {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
-  #hero-canvas {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-  }
-  .hero-inner {
-    position: relative;
-    z-index: 2;
-    text-align: center;
-    padding: 0 40px;
-  }
-  .hero-eyebrow {
-    font-size: 0.65rem;
-    letter-spacing: 0.55em;
-    color: var(--gold);
-    text-transform: uppercase;
-    margin-bottom: 32px;
-    opacity: 0;
-  }
-  .hero-title {
-    font-size: clamp(2.8rem, 6vw, 6.5rem);
-    font-weight: 300;
-    line-height: 1.05;
-    letter-spacing: 0.12em;
-    color: var(--cream);
-    text-transform: uppercase;
-    overflow: hidden;
-  }
-  /* Each letter wrapper for clip reveal */
-  .hero-title .letter-wrap {
-    display: inline-block;
-    overflow: hidden;
-    vertical-align: bottom;
-  }
-  .hero-title .letter {
-    display: inline-block;
-    transform: translateY(110%);
-  }
-  .hero-title .word-space { display: inline-block; width: 0.45em; }
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 28px 60px;
+  display: flex; justify-content: space-between; align-items: center;
+  transition: opacity .5s;
+}
+nav::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(10,8,5,.95) 0%, transparent 100%);
+  pointer-events: none;
+}
+.nav-logo {
+  font-size: .7rem; letter-spacing: .4em; color: var(--gold);
+  text-transform: uppercase; font-weight: 400; position: relative;
+}
+.nav-links { display: flex; gap: 48px; list-style: none; position: relative; }
+.nav-links a {
+  font-size: .65rem; letter-spacing: .3em; color: var(--gold-mid);
+  text-decoration: none; text-transform: uppercase; transition: color .4s;
+}
+.nav-links a:hover { color: var(--cream); }
 
-  .hero-tagline {
-    margin-top: 36px;
-    font-size: clamp(1rem, 1.6vw, 1.35rem);
-    font-style: italic;
-    font-weight: 300;
-    letter-spacing: 0.08em;
-    color: var(--gold-muted);
-    opacity: 0;
-  }
-  .hero-scroll-hint {
-    position: absolute;
-    bottom: 48px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    opacity: 0;
-  }
-  .hero-scroll-hint span {
-    font-size: 0.58rem;
-    letter-spacing: 0.45em;
-    color: var(--gold-muted);
-    text-transform: uppercase;
-  }
-  .scroll-line {
-    width: 1px;
-    height: 60px;
-    background: linear-gradient(to bottom, var(--gold), transparent);
-    animation: scrollPulse 2s ease-in-out infinite;
-  }
-  @keyframes scrollPulse {
-    0%,100% { opacity: 0.3; transform: scaleY(1); }
-    50% { opacity: 1; transform: scaleY(0.7); }
-  }
+/* ══════════════════════════════════════════
+   HERO
+══════════════════════════════════════════ */
+#hero {
+  position: relative; width: 100vw; height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+#hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+#hero-glow {
+  position: absolute; width: 800px; height: 800px;
+  left: 50%; top: 50%; transform: translate(-50%,-50%);
+  background: radial-gradient(circle, rgba(201,168,76,.09) 0%, transparent 65%);
+  pointer-events: none; border-radius: 50%;
+}
+.hero-inner {
+  position: relative; z-index: 2;
+  text-align: center; padding: 0 40px;
+}
+.hero-eyebrow {
+  font-size: .62rem; letter-spacing: .55em; color: var(--gold);
+  text-transform: uppercase; margin-bottom: 32px; opacity: 0;
+}
+.hero-title {
+  font-size: clamp(2.6rem, 5.8vw, 6.2rem);
+  font-weight: 300; line-height: 1.05;
+  letter-spacing: .13em; color: var(--cream);
+  text-transform: uppercase;
+}
+.letter-wrap { display: inline-block; overflow: hidden; vertical-align: bottom; }
+.letter { display: inline-block; transform: translateY(110%); }
+.word-space { display: inline-block; width: .42em; }
 
-  /* ── SECTION BASE ── */
-  section {
-    position: relative;
-    padding: 140px 0;
-  }
-  .container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 60px;
-  }
-  .section-label {
-    font-size: 0.6rem;
-    letter-spacing: 0.55em;
-    color: var(--gold);
-    text-transform: uppercase;
-    margin-bottom: 64px;
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  .section-label::after {
-    content: '';
-    flex: 1;
-    max-width: 80px;
-    height: 1px;
-    background: var(--gold);
-    opacity: 0.4;
-  }
-  .gold-rule {
-    width: 100%;
-    height: 1px;
-    background: linear-gradient(to right, transparent, var(--gold-muted), transparent);
-    opacity: 0.35;
-    margin: 80px 0;
-  }
+.hero-tagline {
+  margin-top: 36px;
+  font-size: clamp(.95rem, 1.5vw, 1.3rem);
+  font-style: italic; font-weight: 300;
+  letter-spacing: .08em; color: var(--gold-mid); opacity: 0;
+}
+.hero-scroll-hint {
+  position: absolute; bottom: 48px; left: 50%; transform: translateX(-50%);
+  z-index: 2; display: flex; flex-direction: column; align-items: center;
+  gap: 10px; opacity: 0;
+}
+.hero-scroll-hint span {
+  font-size: .55rem; letter-spacing: .45em; color: var(--gold-mid); text-transform: uppercase;
+}
+.scroll-line {
+  width: 1px; height: 56px;
+  background: linear-gradient(to bottom, var(--gold), transparent);
+}
 
-  /* ── ABOUT ── */
-  #about { padding: 160px 0; }
-  .about-text {
-    font-size: clamp(1.5rem, 2.8vw, 2.6rem);
-    font-weight: 300;
-    line-height: 1.65;
-    letter-spacing: 0.01em;
-    color: var(--cream);
-    max-width: 860px;
-  }
-  .about-text .line-mask {
-    overflow: hidden;
-    display: block;
-  }
-  .about-text .line-inner {
-    display: block;
-    transform: translateY(100%);
-  }
-  .about-caption {
-    margin-top: 64px;
-    font-size: 0.75rem;
-    letter-spacing: 0.3em;
-    color: var(--gold-muted);
-    text-transform: uppercase;
-    opacity: 0;
-    transform: translateY(16px);
-  }
+/* ══════════════════════════════════════════
+   WORD SPLIT
+══════════════════════════════════════════ */
+.word-mask {
+  display: inline-block; overflow: hidden;
+  vertical-align: bottom; padding-bottom: .06em;
+}
+.word-inner { display: inline-block; transform: translateY(115%); }
 
-  /* ── ENSEMBLE ── */
-  #ensemble { padding: 140px 0; }
-  .ensemble-grid {
-    display: grid;
-    gap: 0;
-  }
-  .instrument-row {
-    display: flex;
-    align-items: center;
-    padding: 36px 0;
-    border-bottom: 1px solid rgba(201,168,76,0.12);
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  .instrument-row:first-child { border-top: 1px solid rgba(201,168,76,0.12); }
-  .instrument-number {
-    font-size: 0.65rem;
-    letter-spacing: 0.3em;
-    color: var(--gold);
-    width: 80px;
-    flex-shrink: 0;
-  }
-  .instrument-name {
-    font-size: clamp(1.6rem, 3vw, 2.8rem);
-    font-weight: 300;
-    letter-spacing: 0.08em;
-    color: var(--cream);
-    flex: 1;
-  }
-  .instrument-origin {
-    font-size: 0.68rem;
-    letter-spacing: 0.3em;
-    color: var(--gold-muted);
-    text-transform: uppercase;
-    text-align: right;
-    width: 200px;
-    flex-shrink: 0;
-  }
+/* ══════════════════════════════════════════
+   SECTION COMMONS
+══════════════════════════════════════════ */
+.container { max-width: 1120px; margin: 0 auto; padding: 0 60px; }
 
-  /* ── CONCERTS ── */
-  #concerts { padding: 140px 0; }
-  .concerts-list { display: flex; flex-direction: column; gap: 0; }
-  .concert-row {
-    display: grid;
-    grid-template-columns: 140px 1fr 1fr auto;
-    align-items: center;
-    padding: 36px 0;
-    border-bottom: 1px solid rgba(201,168,76,0.1);
-    gap: 24px;
-    opacity: 0;
-    transform: translateX(-60px);
-  }
-  .concert-row:first-child { border-top: 1px solid rgba(201,168,76,0.1); }
-  .concert-date {
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-    color: var(--gold);
-    text-transform: uppercase;
-  }
-  .concert-venue {
-    font-size: clamp(1.1rem, 1.8vw, 1.5rem);
-    font-weight: 300;
-    letter-spacing: 0.04em;
-    color: var(--cream);
-  }
-  .concert-city {
-    font-size: 0.72rem;
-    letter-spacing: 0.3em;
-    color: var(--gold-muted);
-    text-transform: uppercase;
-  }
-  .concert-tag {
-    font-size: 0.6rem;
-    letter-spacing: 0.25em;
-    color: var(--bg);
-    background: var(--gold);
-    padding: 6px 14px;
-    text-transform: uppercase;
-  }
+.section-header {
+  display: flex; align-items: center; gap: 28px;
+  margin-bottom: 72px; overflow: hidden;
+}
+.grow-line {
+  height: 1px; width: 80px; flex-shrink: 0;
+  background: var(--gold); transform: scaleX(0); transform-origin: left; opacity: .5;
+}
+.section-title {
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  font-weight: 300; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--cream);
+  opacity: 0; transform: scale(1.6); filter: blur(16px);
+  transform-origin: left center;
+}
+.section-label-small {
+  font-size: .58rem; letter-spacing: .5em; color: var(--gold);
+  text-transform: uppercase; margin-left: auto; flex-shrink: 0;
+  opacity: 0; transform: translateX(20px);
+}
+.section-parallax-num {
+  position: absolute; font-size: 28vw; font-weight: 300; line-height: 1;
+  color: rgba(201,168,76,.035); pointer-events: none; will-change: transform;
+  right: -2vw; top: -4vw; z-index: 0; user-select: none;
+}
 
-  /* ── CONTACT ── */
-  #contact {
-    padding: 160px 0 120px;
-    text-align: center;
-  }
-  .contact-eyebrow {
-    font-size: 0.62rem;
-    letter-spacing: 0.55em;
-    color: var(--gold);
-    text-transform: uppercase;
-    margin-bottom: 56px;
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  .contact-email {
-    font-size: clamp(1.5rem, 3vw, 3rem);
-    font-weight: 300;
-    letter-spacing: 0.06em;
-    color: var(--cream);
-    text-decoration: none;
-    display: inline-block;
-    position: relative;
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  .contact-email::after {
-    content: '';
-    position: absolute;
-    bottom: -4px; left: 0; right: 0;
-    height: 1px;
-    background: var(--gold);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.6s cubic-bezier(0.16,1,0.3,1);
-  }
-  .contact-email:hover::after { transform: scaleX(1); }
+/* ══════════════════════════════════════════
+   ABOUT
+══════════════════════════════════════════ */
+#about {
+  position: relative; padding: 160px 0; overflow: hidden;
+}
+.about-parallax-bg {
+  position: absolute; inset: -30%; pointer-events: none;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(201,168,76,.025) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 50%, rgba(201,168,76,.015) 0%, transparent 55%);
+  will-change: transform;
+}
+#aboutText {
+  font-size: clamp(1.4rem, 2.5vw, 2.4rem);
+  font-weight: 300; line-height: 1.7;
+  letter-spacing: .01em; color: var(--cream);
+  position: relative; z-index: 1;
+}
+.about-caption {
+  margin-top: 64px; font-size: .72rem; letter-spacing: .35em;
+  color: var(--gold-mid); text-transform: uppercase;
+  opacity: 0; transform: translateY(20px); position: relative; z-index: 1;
+}
 
-  .contact-rule {
-    width: 240px;
-    height: 1px;
-    background: linear-gradient(to right, transparent, var(--gold), transparent);
-    margin: 80px auto 0;
-    opacity: 0;
-  }
+/* ══════════════════════════════════════════
+   ENSEMBLE — horizontal pin
+══════════════════════════════════════════ */
+#ensemble { position: relative; }
+#ensemble-inner {
+  width: 100vw; height: 100vh; overflow: hidden; position: relative;
+}
+#ensemble-track {
+  display: flex; width: calc(7 * 100vw); height: 100vh;
+  will-change: transform;
+}
+.instrument-card {
+  width: 100vw; height: 100vh;
+  flex-shrink: 0; position: relative;
+  background-color: #12100d;
+  overflow: hidden;
+  display: flex; align-items: flex-end;
+}
+.card-bg {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  transform: scale(1.12); will-change: transform;
+  transition: none;
+}
+.card-overlay {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(to right, rgba(10,8,5,.92) 0%, rgba(10,8,5,.5) 50%, rgba(10,8,5,.2) 100%),
+    linear-gradient(to top, rgba(10,8,5,.8) 0%, transparent 60%);
+}
+.card-content {
+  position: relative; z-index: 2;
+  padding: 0 8% 10%;
+}
+.card-num {
+  display: block; font-size: .6rem; letter-spacing: .5em;
+  color: var(--gold); text-transform: uppercase; margin-bottom: 24px;
+  opacity: 0; transform: translateX(-50px);
+}
+.card-name {
+  display: block;
+  font-size: clamp(3.5rem, 8vw, 8rem);
+  font-weight: 300; letter-spacing: .08em;
+  color: var(--cream); line-height: 1;
+  opacity: 0; transform: translateX(-70px);
+}
+.card-origin {
+  display: block; margin-top: 20px;
+  font-size: clamp(.75rem, 1.1vw, 1rem);
+  letter-spacing: .3em; color: var(--gold-mid);
+  text-transform: uppercase;
+  opacity: 0; transform: translateX(-40px);
+}
+.card-progress {
+  position: absolute; bottom: 40px; right: 60px;
+  font-size: .6rem; letter-spacing: .4em; color: rgba(201,168,76,.4);
+  text-transform: uppercase; z-index: 2;
+}
 
-  /* ── FOOTER ── */
-  footer {
-    padding: 48px 60px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid rgba(201,168,76,0.08);
-  }
-  .footer-copy {
-    font-size: 0.6rem;
-    letter-spacing: 0.3em;
-    color: var(--gold-muted);
-    text-transform: uppercase;
-  }
-  .footer-mark {
-    font-size: 0.6rem;
-    letter-spacing: 0.3em;
-    color: rgba(138,122,90,0.4);
-    text-transform: uppercase;
-  }
+/* Ensemble label overlay */
+.ensemble-section-label {
+  position: absolute; top: 40px; left: 60px; z-index: 3;
+  display: flex; align-items: center; gap: 20px;
+}
+.ensemble-section-label span {
+  font-size: .6rem; letter-spacing: .5em; color: var(--gold);
+  text-transform: uppercase;
+}
+.ensemble-section-label::after {
+  content: ''; width: 60px; height: 1px; background: var(--gold); opacity: .4;
+  display: block;
+}
 
-  /* ── DECORATIVE GRADIENTS ── */
-  .section-glow {
-    position: absolute;
-    width: 600px; height: 600px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(201,168,76,0.04) 0%, transparent 70%);
-    pointer-events: none;
-  }
+/* ══════════════════════════════════════════
+   CONCERTS
+══════════════════════════════════════════ */
+#concerts { position: relative; padding: 160px 0; overflow: hidden; }
+.concert-row {
+  position: relative; padding: 40px 0;
+  opacity: 0; transform: translateX(-70px);
+}
+.concert-grow-line {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(to right, rgba(201,168,76,.4), rgba(201,168,76,.1));
+  transform: scaleX(0); transform-origin: left;
+}
+.concert-row:last-child .concert-grow-line { opacity: 0; }
+.concert-row-inner {
+  display: grid;
+  grid-template-columns: 160px 1fr 1fr auto;
+  align-items: center; gap: 24px;
+}
+.concert-date {
+  font-size: .68rem; letter-spacing: .22em; color: var(--gold);
+  text-transform: uppercase; opacity: 0; transform: translateY(10px);
+}
+.concert-venue {
+  font-size: clamp(1.1rem, 1.8vw, 1.55rem);
+  font-weight: 300; letter-spacing: .04em; color: var(--cream);
+  opacity: 0; transform: translateY(12px);
+}
+.concert-city {
+  font-size: .68rem; letter-spacing: .28em; color: var(--gold-mid);
+  text-transform: uppercase; opacity: 0; transform: translateY(10px);
+}
+.concert-tag {
+  font-size: .55rem; letter-spacing: .25em; color: var(--bg);
+  background: var(--gold); padding: 7px 14px;
+  text-transform: uppercase; opacity: 0; transform: translateY(10px);
+}
 
-  /* Mobile */
-  @media (max-width: 768px) {
-    nav { padding: 24px 30px; }
-    .nav-links { display: none; }
-    .container { padding: 0 30px; }
-    section { padding: 100px 0; }
-    .concert-row { grid-template-columns: 1fr 1fr; gap: 12px; }
-    .concert-tag { display: none; }
-    .instrument-origin { display: none; }
-    footer { flex-direction: column; gap: 16px; text-align: center; }
-  }
+/* ══════════════════════════════════════════
+   CONTACT
+══════════════════════════════════════════ */
+#contact { padding: 160px 0 120px; text-align: center; overflow: hidden; }
+.contact-eyebrow {
+  font-size: .6rem; letter-spacing: .55em; color: var(--gold);
+  text-transform: uppercase; margin-bottom: 56px;
+  opacity: 0; transform: translateY(24px);
+}
+.contact-email {
+  font-size: clamp(1.3rem, 2.8vw, 2.8rem);
+  font-weight: 300; letter-spacing: .06em; color: var(--cream);
+  text-decoration: none; display: inline-block; position: relative;
+  opacity: 0; transform: translateY(36px);
+}
+.contact-email::after {
+  content: ''; position: absolute; bottom: -6px; left: 0; right: 0;
+  height: 1px; background: var(--gold);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .7s cubic-bezier(.16,1,.3,1);
+}
+.contact-email:hover::after { transform: scaleX(1); }
+.contact-rule {
+  width: 200px; height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold), transparent);
+  margin: 80px auto 0; opacity: 0;
+}
+
+/* ══════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════ */
+footer {
+  padding: 44px 60px;
+  display: flex; justify-content: space-between; align-items: center;
+  border-top: 1px solid rgba(201,168,76,.07);
+}
+.footer-copy, .footer-mark {
+  font-size: .58rem; letter-spacing: .3em; text-transform: uppercase;
+}
+.footer-copy { color: var(--gold-mid); }
+.footer-mark { color: rgba(138,122,90,.3); }
+
+/* ── MOBILE ── */
+@media (max-width: 768px) {
+  nav { padding: 22px 24px; }
+  .nav-links { display: none; }
+  .container { padding: 0 24px; }
+  #about, #concerts, #contact { padding: 100px 0; }
+  .concert-row-inner { grid-template-columns: 1fr 1fr; }
+  .concert-tag { display: none; }
+  footer { flex-direction: column; gap: 14px; text-align: center; }
+  .section-parallax-num { font-size: 45vw; }
+}
 </style>
 </head>
 <body>
+
+<!-- Cinematic transition overlay -->
+<div id="transition-overlay"></div>
 
 <!-- Cursor -->
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
 
-<!-- Navigation -->
+<!-- Nav -->
 <nav id="nav">
   <div class="nav-logo">FSC</div>
   <ul class="nav-links">
@@ -434,9 +382,12 @@
   </ul>
 </nav>
 
-<!-- ── HERO ── -->
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
 <section id="hero">
   <canvas id="hero-canvas"></canvas>
+  <div id="hero-glow"></div>
   <div class="hero-inner">
     <p class="hero-eyebrow" id="heroEyebrow">Est. 2024 &nbsp;·&nbsp; World Music</p>
     <h1 class="hero-title" id="heroTitle"></h1>
@@ -444,112 +395,199 @@
   </div>
   <div class="hero-scroll-hint" id="scrollHint">
     <span>Scroll</span>
-    <div class="scroll-line"></div>
+    <div class="scroll-line" id="scrollLine"></div>
   </div>
 </section>
 
-<!-- ── ABOUT ── -->
+<!-- ══════════════════════════════════════════
+     ABOUT
+══════════════════════════════════════════ -->
 <section id="about">
-  <div class="section-glow" style="right:-200px;top:-100px;"></div>
+  <div class="about-parallax-bg" id="aboutParallaxBg"></div>
+  <div class="section-parallax-num" id="aboutParallaxNum">01</div>
   <div class="container">
-    <p class="section-label" id="aboutLabel">I &nbsp; About</p>
-    <div class="about-text" id="aboutText"></div>
-    <p class="about-caption" id="aboutCaption">Eight Nations · One Voice</p>
+    <div class="section-header">
+      <div class="grow-line" id="aboutLine"></div>
+      <h2 class="section-title" id="aboutTitle">About</h2>
+      <span class="section-label-small" id="aboutLabelSmall">Fons Sophiae</span>
+    </div>
+    <div id="aboutText"></div>
+    <p class="about-caption" id="aboutCaption">Eight Nations &nbsp;·&nbsp; One Voice</p>
   </div>
 </section>
 
-<!-- ── ENSEMBLE ── -->
+<!-- ══════════════════════════════════════════
+     ENSEMBLE — pinned horizontal scroll
+══════════════════════════════════════════ -->
 <section id="ensemble">
-  <div class="section-glow" style="left:-200px;top:50%;transform:translateY(-50%);"></div>
-  <div class="container">
-    <p class="section-label" id="ensembleLabel">II &nbsp; The Ensemble</p>
-    <div class="ensemble-grid" id="ensembleGrid">
-      <div class="instrument-row">
-        <span class="instrument-number">01</span>
-        <span class="instrument-name">Ney</span>
-        <span class="instrument-origin">Persia · Turkey</span>
-      </div>
-      <div class="instrument-row">
-        <span class="instrument-number">02</span>
-        <span class="instrument-name">Oud</span>
-        <span class="instrument-origin">Arab World</span>
-      </div>
-      <div class="instrument-row">
-        <span class="instrument-number">03</span>
-        <span class="instrument-name">Balaban</span>
-        <span class="instrument-origin">Azerbaijan</span>
-      </div>
-      <div class="instrument-row">
-        <span class="instrument-number">04</span>
-        <span class="instrument-name">Bağlama</span>
-        <span class="instrument-origin">Türkiye</span>
-      </div>
-      <div class="instrument-row">
-        <span class="instrument-number">05</span>
-        <span class="instrument-name">Kemane</span>
-        <span class="instrument-origin">Central Asia</span>
-      </div>
-      <div class="instrument-row">
-        <span class="instrument-number">06</span>
-        <span class="instrument-name">Erhu</span>
-        <span class="instrument-origin">China</span>
-      </div>
-      <div class="instrument-row">
-        <span class="instrument-number">07</span>
-        <span class="instrument-name">Flamenco Guitar</span>
-        <span class="instrument-origin">Spain</span>
-      </div>
+  <div id="ensemble-inner">
+    <div class="ensemble-section-label">
+      <span>II &nbsp; The Ensemble</span>
     </div>
-  </div>
+    <div id="ensemble-track">
+
+      <!-- 01 Ney -->
+      <div class="instrument-card">
+        <div class="card-bg" style="background-image:url('https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&w=1920&q=80')"></div>
+        <div class="card-overlay"></div>
+        <div class="card-content">
+          <span class="card-num">01 / 07</span>
+          <span class="card-name">Ney</span>
+          <span class="card-origin">Turkey &amp; Persia</span>
+        </div>
+        <div class="card-progress">Scroll to explore</div>
+      </div>
+
+      <!-- 02 Oud -->
+      <div class="instrument-card">
+        <div class="card-bg" style="background-image:url('https://images.unsplash.com/photo-1574939571745-364bf21d1d95?auto=format&fit=crop&w=1920&q=80')"></div>
+        <div class="card-overlay"></div>
+        <div class="card-content">
+          <span class="card-num">02 / 07</span>
+          <span class="card-name">Oud</span>
+          <span class="card-origin">Morocco &amp; Middle East</span>
+        </div>
+      </div>
+
+      <!-- 03 Balaban -->
+      <div class="instrument-card">
+        <div class="card-bg" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80')"></div>
+        <div class="card-overlay"></div>
+        <div class="card-content">
+          <span class="card-num">03 / 07</span>
+          <span class="card-name">Balaban</span>
+          <span class="card-origin">Azerbaijan</span>
+        </div>
+      </div>
+
+      <!-- 04 Bağlama -->
+      <div class="instrument-card">
+        <div class="card-bg" style="background-image:url('https://images.unsplash.com/photo-1519677100203-a0e668c92439?auto=format&fit=crop&w=1920&q=80')"></div>
+        <div class="card-overlay"></div>
+        <div class="card-content">
+          <span class="card-num">04 / 07</span>
+          <span class="card-name">Bağlama</span>
+          <span class="card-origin">Türkiye</span>
+        </div>
+      </div>
+
+      <!-- 05 Kemane -->
+      <div class="instrument-card">
+        <div class="card-bg" style="background-image:url('https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&w=1920&q=80')"></div>
+        <div class="card-overlay"></div>
+        <div class="card-content">
+          <span class="card-num">05 / 07</span>
+          <span class="card-name">Kemane</span>
+          <span class="card-origin">Azerbaijan &amp; Iran</span>
+        </div>
+      </div>
+
+      <!-- 06 Erhu -->
+      <div class="instrument-card">
+        <div class="card-bg" style="background-image:url('https://images.unsplash.com/photo-1547891654-e66ed7ebb968?auto=format&fit=crop&w=1920&q=80')"></div>
+        <div class="card-overlay"></div>
+        <div class="card-content">
+          <span class="card-num">06 / 07</span>
+          <span class="card-name">Erhu</span>
+          <span class="card-origin">China</span>
+        </div>
+      </div>
+
+      <!-- 07 Flamenco Guitar -->
+      <div class="instrument-card">
+        <div class="card-bg" style="background-image:url('https://images.unsplash.com/photo-1511882150382-421056c89033?auto=format&fit=crop&w=1920&q=80')"></div>
+        <div class="card-overlay"></div>
+        <div class="card-content">
+          <span class="card-num">07 / 07</span>
+          <span class="card-name">Flamenco Guitar</span>
+          <span class="card-origin">Spain</span>
+        </div>
+      </div>
+
+    </div><!-- /ensemble-track -->
+  </div><!-- /ensemble-inner -->
 </section>
 
-<!-- ── CONCERTS ── -->
+<!-- ══════════════════════════════════════════
+     CONCERTS
+══════════════════════════════════════════ -->
 <section id="concerts">
-  <div class="section-glow" style="right:-150px;bottom:0;"></div>
+  <div class="section-parallax-num" id="concertsParallaxNum">03</div>
   <div class="container">
-    <p class="section-label" id="concertsLabel">III &nbsp; Concerts</p>
+    <div class="section-header">
+      <div class="grow-line" id="concertsLine"></div>
+      <h2 class="section-title" id="concertsTitle">Concerts</h2>
+      <span class="section-label-small" id="concertsLabelSmall">2025 Season</span>
+    </div>
     <div class="concerts-list" id="concertsList">
+
       <div class="concert-row">
-        <span class="concert-date">Sep 12, 2025</span>
-        <span class="concert-venue">Barbican Centre</span>
-        <span class="concert-city">London, United Kingdom</span>
-        <span class="concert-tag">Premiere</span>
+        <div class="concert-row-inner">
+          <span class="concert-date">Sep 12, 2025</span>
+          <span class="concert-venue">Barbican Centre</span>
+          <span class="concert-city">London, United Kingdom</span>
+          <span class="concert-tag">Premiere</span>
+        </div>
+        <div class="concert-grow-line"></div>
       </div>
+
       <div class="concert-row">
-        <span class="concert-date">Oct 04, 2025</span>
-        <span class="concert-venue">Philharmonie de Paris</span>
-        <span class="concert-city">Paris, France</span>
-        <span class="concert-tag">Sold Out</span>
+        <div class="concert-row-inner">
+          <span class="concert-date">Oct 04, 2025</span>
+          <span class="concert-venue">Philharmonie de Paris</span>
+          <span class="concert-city">Paris, France</span>
+          <span class="concert-tag">Sold Out</span>
+        </div>
+        <div class="concert-grow-line"></div>
       </div>
+
       <div class="concert-row">
-        <span class="concert-date">Oct 19, 2025</span>
-        <span class="concert-venue">Konzerthaus Berlin</span>
-        <span class="concert-city">Berlin, Germany</span>
-        <span class="concert-tag">Available</span>
+        <div class="concert-row-inner">
+          <span class="concert-date">Oct 19, 2025</span>
+          <span class="concert-venue">Konzerthaus Berlin</span>
+          <span class="concert-city">Berlin, Germany</span>
+          <span class="concert-tag">Available</span>
+        </div>
+        <div class="concert-grow-line"></div>
       </div>
+
       <div class="concert-row">
-        <span class="concert-date">Nov 08, 2025</span>
-        <span class="concert-venue">Teatro Real</span>
-        <span class="concert-city">Madrid, Spain</span>
-        <span class="concert-tag">Available</span>
+        <div class="concert-row-inner">
+          <span class="concert-date">Nov 08, 2025</span>
+          <span class="concert-venue">Teatro Real</span>
+          <span class="concert-city">Madrid, Spain</span>
+          <span class="concert-tag">Available</span>
+        </div>
+        <div class="concert-grow-line"></div>
       </div>
+
       <div class="concert-row">
-        <span class="concert-date">Nov 22, 2025</span>
-        <span class="concert-venue">Shanghai Concert Hall</span>
-        <span class="concert-city">Shanghai, China</span>
-        <span class="concert-tag">Available</span>
+        <div class="concert-row-inner">
+          <span class="concert-date">Nov 22, 2025</span>
+          <span class="concert-venue">Shanghai Concert Hall</span>
+          <span class="concert-city">Shanghai, China</span>
+          <span class="concert-tag">Available</span>
+        </div>
+        <div class="concert-grow-line"></div>
       </div>
+
       <div class="concert-row">
-        <span class="concert-date">Dec 06, 2025</span>
-        <span class="concert-venue">Cemal Reşit Rey Salonu</span>
-        <span class="concert-city">Istanbul, Türkiye</span>
-        <span class="concert-tag">Closing Night</span>
+        <div class="concert-row-inner">
+          <span class="concert-date">Dec 06, 2025</span>
+          <span class="concert-venue">Cemal Reşit Rey Salonu</span>
+          <span class="concert-city">Istanbul, Türkiye</span>
+          <span class="concert-tag">Closing Night</span>
+        </div>
+        <div class="concert-grow-line"></div>
       </div>
+
     </div>
   </div>
 </section>
 
-<!-- ── CONTACT ── -->
+<!-- ══════════════════════════════════════════
+     CONTACT
+══════════════════════════════════════════ -->
 <section id="contact">
   <div class="container" style="display:flex;flex-direction:column;align-items:center;">
     <p class="contact-eyebrow" id="contactEyebrow">IV &nbsp; Contact</p>
@@ -560,273 +598,368 @@
   </div>
 </section>
 
-<!-- Footer -->
 <footer>
   <span class="footer-copy">© 2025 Fons Sophiae Collective. All rights reserved.</span>
   <span class="footer-mark">Where the Silk Road Sings</span>
 </footer>
 
-<!-- GSAP CDN -->
+<!-- ══════════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════════ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<!-- Lenis CDN -->
 <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
-
 <script>
 /* ══════════════════════════════════════════
-   LENIS SMOOTH SCROLL
+   LENIS
 ══════════════════════════════════════════ */
 const lenis = new Lenis({
-  duration: 1.4,
+  duration: 1.6,
   easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
   smoothTouch: false,
 });
-function raf(time) {
-  lenis.raf(time);
-  requestAnimationFrame(raf);
-}
-requestAnimationFrame(raf);
-
 gsap.ticker.add(time => lenis.raf(time * 1000));
 gsap.ticker.lagSmoothing(0);
+gsap.registerPlugin(ScrollTrigger);
 
 /* ══════════════════════════════════════════
-   CUSTOM CURSOR
+   CURSOR
 ══════════════════════════════════════════ */
 const cursor = document.getElementById('cursor');
 const cursorRing = document.getElementById('cursorRing');
-let mx = 0, my = 0, rx = 0, ry = 0;
-
+let mx = window.innerWidth / 2, my = window.innerHeight / 2;
+let rx = mx, ry = my;
 document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
 (function animCursor() {
-  rx += (mx - rx) * 0.12;
-  ry += (my - ry) * 0.12;
-  cursor.style.left = mx + 'px';
-  cursor.style.top = my + 'px';
-  cursorRing.style.left = rx + 'px';
-  cursorRing.style.top = ry + 'px';
+  rx += (mx - rx) * 0.1;
+  ry += (my - ry) * 0.1;
+  cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+  cursorRing.style.left = rx + 'px'; cursorRing.style.top = ry + 'px';
   requestAnimationFrame(animCursor);
 })();
-
-document.querySelectorAll('a, .instrument-row, .concert-row').forEach(el => {
+document.querySelectorAll('a, .instrument-card, .concert-row').forEach(el => {
   el.addEventListener('mouseenter', () => {
-    cursorRing.style.width = '56px';
-    cursorRing.style.height = '56px';
-    cursorRing.style.borderColor = 'rgba(201,168,76,0.9)';
+    cursorRing.style.width = '60px'; cursorRing.style.height = '60px';
+    cursorRing.style.borderColor = 'rgba(201,168,76,.85)';
   });
   el.addEventListener('mouseleave', () => {
-    cursorRing.style.width = '36px';
-    cursorRing.style.height = '36px';
-    cursorRing.style.borderColor = 'rgba(201,168,76,0.5)';
+    cursorRing.style.width = '38px'; cursorRing.style.height = '38px';
+    cursorRing.style.borderColor = 'rgba(201,168,76,.45)';
   });
 });
 
 /* ══════════════════════════════════════════
-   CANVAS PARTICLE SYSTEM
+   CINEMATIC TRANSITION FLASH
+══════════════════════════════════════════ */
+const overlay = document.getElementById('transition-overlay');
+let overlayActive = false;
+function flashSection() {
+  if (overlayActive) return;
+  overlayActive = true;
+  gsap.timeline({
+    onComplete: () => { overlayActive = false; }
+  })
+  .to(overlay, { opacity: 1, duration: 0.38, ease: 'power2.in' })
+  .to(overlay, { opacity: 0, duration: 0.65, ease: 'power2.out', delay: 0.05 });
+}
+['#about', '#ensemble', '#concerts', '#contact'].forEach(id => {
+  const el = document.querySelector(id);
+  if (!el) return;
+  ScrollTrigger.create({
+    trigger: el,
+    start: 'top 25%',
+    onEnter: () => flashSection(),
+    onEnterBack: () => flashSection(),
+  });
+});
+
+/* ══════════════════════════════════════════
+   CANVAS PARTICLES (ember drift)
 ══════════════════════════════════════════ */
 const canvas = document.getElementById('hero-canvas');
 const ctx = canvas.getContext('2d');
-let W, H, particles = [];
-
-function resize() {
+let W, H;
+function resizeCanvas() {
   W = canvas.width = window.innerWidth;
   H = canvas.height = window.innerHeight;
 }
-resize();
-window.addEventListener('resize', resize);
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
 
-class Particle {
+class Ember {
   constructor() { this.reset(true); }
   reset(initial) {
     this.x = Math.random() * W;
-    this.y = initial ? Math.random() * H : H + 10;
-    this.size = Math.random() * 1.5 + 0.3;
-    this.speedY = -(Math.random() * 0.4 + 0.15);
-    this.speedX = (Math.random() - 0.5) * 0.2;
-    this.opacity = 0;
-    this.maxOpacity = Math.random() * 0.6 + 0.1;
+    this.y = initial ? Math.random() * H : H + 8;
+    this.r = Math.random() * 1.6 + 0.2;
+    this.vy = -(Math.random() * 0.5 + 0.2);
+    this.vx = (Math.random() - 0.5) * 0.25;
     this.life = 0;
-    this.maxLife = Math.random() * 300 + 200;
+    this.maxLife = Math.random() * 280 + 180;
+    this.maxA = Math.random() * 0.55 + 0.1;
+    this.a = 0;
     this.pulse = Math.random() * Math.PI * 2;
+    this.wobble = Math.random() * 0.02 - 0.01;
   }
   update() {
-    this.x += this.speedX;
-    this.y += this.speedY;
+    this.x += this.vx + Math.sin(this.life * 0.03) * 0.3;
+    this.y += this.vy;
     this.life++;
-    this.pulse += 0.02;
-    const half = this.maxLife / 2;
-    if (this.life < half) {
-      this.opacity = (this.life / half) * this.maxOpacity;
-    } else {
-      this.opacity = ((this.maxLife - this.life) / half) * this.maxOpacity;
-    }
-    if (this.life >= this.maxLife) this.reset(false);
+    this.pulse += 0.018;
+    const half = this.maxLife * 0.45;
+    if (this.life < half) this.a = (this.life / half) * this.maxA;
+    else this.a = ((this.maxLife - this.life) / (this.maxLife - half)) * this.maxA;
+    if (this.life >= this.maxLife || this.y < -10) this.reset(false);
   }
   draw() {
-    const flicker = 1 + Math.sin(this.pulse) * 0.15;
+    const flicker = 1 + Math.sin(this.pulse) * 0.2;
     ctx.save();
-    ctx.globalAlpha = this.opacity * flicker;
+    ctx.globalAlpha = this.a * flicker;
     ctx.fillStyle = '#c9a84c';
+    ctx.shadowColor = '#c9a84c';
+    ctx.shadowBlur = 4;
     ctx.beginPath();
-    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
   }
 }
 
-for (let i = 0; i < 160; i++) particles.push(new Particle());
+const embers = Array.from({ length: 180 }, () => new Ember());
+let heroMouseX = W / 2, heroMouseY = H / 2;
+document.addEventListener('mousemove', e => { heroMouseX = e.clientX; heroMouseY = e.clientY; });
 
-let mouseX = W / 2, mouseY = H / 2;
-document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
-
-function drawCanvas() {
+function drawHero() {
   ctx.clearRect(0, 0, W, H);
-
-  // Vignette
-  const vg = ctx.createRadialGradient(W/2, H/2, H*0.1, W/2, H/2, H*0.85);
+  const vg = ctx.createRadialGradient(W/2, H/2, H*.05, W/2, H/2, H*.9);
   vg.addColorStop(0, 'rgba(10,8,5,0)');
-  vg.addColorStop(1, 'rgba(10,8,5,0.85)');
+  vg.addColorStop(1, 'rgba(10,8,5,.9)');
   ctx.fillStyle = vg;
   ctx.fillRect(0, 0, W, H);
-
-  // Subtle mouse glow
-  const mg = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, 280);
-  mg.addColorStop(0, 'rgba(201,168,76,0.025)');
+  const mg = ctx.createRadialGradient(heroMouseX, heroMouseY, 0, heroMouseX, heroMouseY, 300);
+  mg.addColorStop(0, 'rgba(201,168,76,.03)');
   mg.addColorStop(1, 'rgba(201,168,76,0)');
   ctx.fillStyle = mg;
   ctx.fillRect(0, 0, W, H);
-
-  particles.forEach(p => { p.update(); p.draw(); });
-  requestAnimationFrame(drawCanvas);
+  embers.forEach(e => { e.update(); e.draw(); });
+  requestAnimationFrame(drawHero);
 }
-drawCanvas();
+drawHero();
 
 /* ══════════════════════════════════════════
-   HERO TITLE — LETTER BY LETTER
+   HERO GLOW PULSE
 ══════════════════════════════════════════ */
-gsap.registerPlugin(ScrollTrigger);
+gsap.to('#hero-glow', {
+  scale: 1.35,
+  opacity: 0.55,
+  duration: 3.5,
+  ease: 'sine.inOut',
+  yoyo: true,
+  repeat: -1,
+});
 
+/* ══════════════════════════════════════════
+   HERO LETTERS
+══════════════════════════════════════════ */
 const titleEl = document.getElementById('heroTitle');
-const titleText = ['FONS', 'SOPHIAE', 'COLLECTIVE'];
-
-titleText.forEach((word, wi) => {
-  if (wi > 0) {
+const words = ['FONS', 'SOPHIAE', 'COLLECTIVE'];
+words.forEach((word, wi) => {
+  if (wi === 2) titleEl.appendChild(document.createElement('br'));
+  else if (wi > 0) {
     const sp = document.createElement('span');
-    sp.className = 'word-space';
-    titleEl.appendChild(sp);
-  }
-  // Line break after FONS SOPHIAE
-  if (wi === 2) {
-    const br = document.createElement('br');
-    titleEl.appendChild(br);
+    sp.className = 'word-space'; titleEl.appendChild(sp);
   }
   [...word].forEach(char => {
-    const wrap = document.createElement('span');
-    wrap.className = 'letter-wrap';
-    const inner = document.createElement('span');
-    inner.className = 'letter';
+    const wrap = document.createElement('span'); wrap.className = 'letter-wrap';
+    const inner = document.createElement('span'); inner.className = 'letter';
     inner.textContent = char;
-    wrap.appendChild(inner);
-    titleEl.appendChild(wrap);
+    wrap.appendChild(inner); titleEl.appendChild(wrap);
   });
 });
 
-const letters = titleEl.querySelectorAll('.letter');
+/* HERO SCROLL HINT bounce */
+gsap.to('#scrollLine', {
+  scaleY: 0.6,
+  transformOrigin: 'top center',
+  duration: 1.1,
+  ease: 'power1.inOut',
+  yoyo: true,
+  repeat: -1,
+});
 
-const heroTL = gsap.timeline({ delay: 0.3 });
-
+const heroTL = gsap.timeline({ delay: 0.4 });
 heroTL
   .to('#heroEyebrow', { opacity: 1, y: 0, duration: 1, ease: 'power3.out' })
-  .to(letters, {
-    y: '0%',
-    duration: 1.1,
-    ease: 'power4.out',
-    stagger: 0.035,
-  }, '-=0.4')
-  .to('#heroTagline', { opacity: 1, duration: 1.2, ease: 'power2.out' }, '-=0.4')
-  .to('#scrollHint', { opacity: 1, duration: 1, ease: 'power2.out' }, '-=0.6');
+  .to('.letter', {
+    y: '0%', duration: 1.15, ease: 'power4.out', stagger: 0.038,
+  }, '-=0.5')
+  .to('#heroTagline', { opacity: 1, duration: 1.2, ease: 'power2.out' }, '-=0.5')
+  .to('#scrollHint', { opacity: 1, duration: 1, ease: 'power2.out' }, '-=0.5');
 
 /* ══════════════════════════════════════════
-   ABOUT — LINE-BY-LINE REVEAL
+   WORD SPLITTER
 ══════════════════════════════════════════ */
-const aboutRaw = `Founded by composer Sami Yusuf, Fons Sophiae Collective brings together master musicians from eight nations — China, Spain, France, Germany, the United Kingdom, Morocco, Azerbaijan, and Türkiye — in a union of ancient traditions.`;
+function splitWords(el, text) {
+  const words = text.trim().split(/\s+/);
+  el.innerHTML = '';
+  words.forEach((word, i) => {
+    const mask = document.createElement('span'); mask.className = 'word-mask';
+    const inner = document.createElement('span'); inner.className = 'word-inner';
+    inner.textContent = word;
+    mask.appendChild(inner); el.appendChild(mask);
+    if (i < words.length - 1) el.appendChild(document.createTextNode(' '));
+  });
+  return el.querySelectorAll('.word-inner');
+}
 
-const aboutEl = document.getElementById('aboutText');
-// Split into ~4 lines by wrapping chunks
-const words = aboutRaw.split(' ');
-const chunks = [];
-let chunk = [];
-words.forEach((w, i) => {
-  chunk.push(w);
-  const roughChunkSize = window.innerWidth < 768 ? 6 : 9;
-  if (chunk.length >= roughChunkSize || i === words.length - 1) {
-    chunks.push(chunk.join(' '));
-    chunk = [];
+/* ══════════════════════════════════════════
+   SECTION HEADER ANIMATION HELPER
+══════════════════════════════════════════ */
+function animateHeader(lineId, titleId, labelId, trigger) {
+  ScrollTrigger.create({
+    trigger,
+    start: 'top 72%',
+    onEnter: () => {
+      gsap.to(lineId, { scaleX: 1, duration: 1.1, ease: 'power3.out' });
+      gsap.to(titleId, {
+        scale: 1, filter: 'blur(0px)', opacity: 1,
+        duration: 1.5, ease: 'power3.out', delay: 0.15
+      });
+      if (labelId) gsap.to(labelId, { opacity: 1, x: 0, duration: 1, ease: 'power3.out', delay: 0.4 });
+    }
+  });
+}
+
+/* ══════════════════════════════════════════
+   ABOUT
+══════════════════════════════════════════ */
+animateHeader('#aboutLine', '#aboutTitle', '#aboutLabelSmall', '#about');
+
+// Parallax background
+gsap.to('#aboutParallaxBg', {
+  yPercent: 20,
+  scrollTrigger: {
+    trigger: '#about', start: 'top bottom', end: 'bottom top', scrub: true
   }
 });
 
-chunks.forEach(line => {
-  const mask = document.createElement('span');
-  mask.className = 'line-mask';
-  const inner = document.createElement('span');
-  inner.className = 'line-inner';
-  inner.textContent = line + ' ';
-  mask.appendChild(inner);
-  aboutEl.appendChild(mask);
+// Parallax number
+gsap.to('#aboutParallaxNum', {
+  yPercent: -22,
+  scrollTrigger: {
+    trigger: '#about', start: 'top bottom', end: 'bottom top', scrub: true
+  }
 });
+
+// Word-by-word text reveal
+const aboutRaw = 'Founded by composer Sami Yusuf, Fons Sophiae Collective brings together master musicians from eight nations — China, Spain, France, Germany, the United Kingdom, Morocco, Azerbaijan, and Türkiye — in a union of ancient traditions.';
+const aboutWords = splitWords(document.getElementById('aboutText'), aboutRaw);
 
 ScrollTrigger.create({
   trigger: '#about',
-  start: 'top 75%',
+  start: 'top 65%',
   onEnter: () => {
-    gsap.to('#aboutLabel', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' });
-    gsap.to('.line-inner', {
-      y: '0%',
-      duration: 1.2,
-      ease: 'power4.out',
-      stagger: 0.12,
-      delay: 0.2,
+    gsap.to(aboutWords, {
+      y: '0%', duration: 0.9, ease: 'power3.out',
+      stagger: { each: 0.045, from: 'start' },
+      delay: 0.3,
     });
-    gsap.to('#aboutCaption', { opacity: 1, y: 0, duration: 1, ease: 'power3.out', delay: 1 });
+    gsap.to('#aboutCaption', { opacity: 1, y: 0, duration: 1, ease: 'power3.out', delay: 1.4 });
   }
 });
 
 /* ══════════════════════════════════════════
-   ENSEMBLE
+   ENSEMBLE — pinned horizontal scroll
 ══════════════════════════════════════════ */
-ScrollTrigger.create({
-  trigger: '#ensemble',
-  start: 'top 70%',
-  onEnter: () => {
-    gsap.to('#ensembleLabel', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' });
-    gsap.to('.instrument-row', {
-      opacity: 1,
-      y: 0,
-      duration: 0.9,
-      ease: 'power3.out',
-      stagger: 0.1,
-      delay: 0.2,
-    });
-  }
+const ensembleInner = document.getElementById('ensemble-inner');
+const ensembleTrack = document.getElementById('ensemble-track');
+const cards = gsap.utils.toArray('.instrument-card');
+const numCards = cards.length;
+
+const horizontalTween = gsap.to(ensembleTrack, {
+  x: () => -(numCards - 1) * window.innerWidth,
+  ease: 'none',
+  paused: true,
+});
+
+const ensembleST = ScrollTrigger.create({
+  trigger: ensembleInner,
+  start: 'top top',
+  end: () => `+=${(numCards - 1) * window.innerWidth}`,
+  pin: true,
+  scrub: 1.8,
+  animation: horizontalTween,
+  snap: {
+    snapTo: 1 / (numCards - 1),
+    duration: { min: 0.3, max: 0.65 },
+    delay: 0.05,
+    ease: 'power2.inOut',
+  },
+  invalidateOnRefresh: true,
+});
+
+// Per-card zoom + text slide in
+cards.forEach((card, i) => {
+  const bg = card.querySelector('.card-bg');
+  const num = card.querySelector('.card-num');
+  const name = card.querySelector('.card-name');
+  const origin = card.querySelector('.card-origin');
+
+  // Stagger in the text elements
+  ScrollTrigger.create({
+    trigger: card,
+    containerAnimation: horizontalTween,
+    start: 'left 75%',
+    onEnter: () => {
+      gsap.to(bg, { scale: 1.04, duration: 2.8, ease: 'power1.out' });
+      gsap.to([num, name, origin], {
+        x: 0, opacity: 1,
+        stagger: 0.14,
+        duration: 1.2,
+        ease: 'power3.out',
+        delay: 0.1,
+      });
+    },
+    onLeaveBack: () => {
+      gsap.to(bg, { scale: 1.12, duration: 1.2, ease: 'power2.in' });
+      gsap.to([num, name, origin], { x: -60, opacity: 0, duration: 0.5, stagger: 0.07 });
+    },
+  });
 });
 
 /* ══════════════════════════════════════════
    CONCERTS
 ══════════════════════════════════════════ */
-ScrollTrigger.create({
-  trigger: '#concerts',
-  start: 'top 70%',
-  onEnter: () => {
-    gsap.to('#concertsLabel', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' });
-    gsap.to('.concert-row', {
-      opacity: 1,
-      x: 0,
-      duration: 0.9,
-      ease: 'power3.out',
-      stagger: 0.1,
-      delay: 0.2,
-    });
+animateHeader('#concertsLine', '#concertsTitle', '#concertsLabelSmall', '#concerts');
+
+gsap.to('#concertsParallaxNum', {
+  yPercent: -20,
+  scrollTrigger: {
+    trigger: '#concerts', start: 'top bottom', end: 'bottom top', scrub: true
   }
+});
+
+const concertRows = gsap.utils.toArray('.concert-row');
+concertRows.forEach((row, i) => {
+  const venue  = row.querySelector('.concert-venue');
+  const date   = row.querySelector('.concert-date');
+  const city   = row.querySelector('.concert-city');
+  const tag    = row.querySelector('.concert-tag');
+  const line   = row.querySelector('.concert-grow-line');
+
+  ScrollTrigger.create({
+    trigger: row,
+    start: 'top 88%',
+    onEnter: () => {
+      const tl = gsap.timeline({ delay: i * 0.1 });
+      tl.to(row,   { x: 0, opacity: 1, duration: 0.9, ease: 'power3.out' })
+        .to(venue,  { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }, '-=0.55')
+        .to(date,   { y: 0, opacity: 1, duration: 0.45, ease: 'power2.out' }, '-=0.35')
+        .to(city,   { y: 0, opacity: 1, duration: 0.45, ease: 'power2.out' }, '-=0.3')
+        .to(tag,    { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out' }, '-=0.25')
+        .to(line,   { scaleX: 1, duration: 1, ease: 'power3.out' }, '-=0.4');
+    }
+  });
 });
 
 /* ══════════════════════════════════════════
@@ -834,27 +967,22 @@ ScrollTrigger.create({
 ══════════════════════════════════════════ */
 ScrollTrigger.create({
   trigger: '#contact',
-  start: 'top 75%',
+  start: 'top 72%',
   onEnter: () => {
-    gsap.to('#contactEyebrow', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' });
-    gsap.to('#contactEmail', { opacity: 1, y: 0, duration: 1, ease: 'power3.out', delay: 0.2 });
-    gsap.to('#contactRule', { opacity: 0.6, duration: 1.2, ease: 'power2.out', delay: 0.6 });
+    gsap.to('#contactEyebrow', { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' });
+    gsap.to('#contactEmail',   { opacity: 1, y: 0, duration: 1.1, ease: 'power3.out', delay: 0.2 });
+    gsap.to('#contactRule',    { opacity: 0.6, duration: 1.4, ease: 'power2.out', delay: 0.6 });
   }
 });
 
 /* ══════════════════════════════════════════
-   NAV FADE ON SCROLL
+   NAV dim on scroll down
 ══════════════════════════════════════════ */
-ScrollTrigger.create({
-  start: 'top -80',
-  onUpdate: self => {
-    const nav = document.getElementById('nav');
-    if (self.direction === 1 && self.progress > 0) {
-      nav.style.opacity = '0.7';
-    } else {
-      nav.style.opacity = '1';
-    }
-  }
+let lastY = 0;
+lenis.on('scroll', ({ scroll }) => {
+  const nav = document.getElementById('nav');
+  nav.style.opacity = (scroll > 80 && scroll > lastY) ? '0.6' : '1';
+  lastY = scroll;
 });
 
 /* ══════════════════════════════════════════
@@ -864,9 +992,14 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   a.addEventListener('click', e => {
     e.preventDefault();
     const target = document.querySelector(a.getAttribute('href'));
-    if (target) lenis.scrollTo(target, { offset: -80, duration: 2 });
+    if (target) lenis.scrollTo(target, { offset: -60, duration: 2.2 });
   });
 });
+
+/* ══════════════════════════════════════════
+   RESIZE
+══════════════════════════════════════════ */
+window.addEventListener('resize', () => ScrollTrigger.refresh());
 </script>
 </body>
 </html>
