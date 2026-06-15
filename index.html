@@ -8,370 +8,114 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0805;--cream:#f5e6c8;--gold:#c9a84c;--gold-mid:#8a7a5a}
+html{scroll-behavior:auto}
+body{background:var(--bg);color:var(--cream);font-family:'Cormorant Garamond',Georgia,serif;overflow-x:hidden;cursor:none}
 
-:root {
-  --bg:       #0a0805;
-  --cream:    #f5e6c8;
-  --gold:     #c9a84c;
-  --gold-mid: #8a7a5a;
-  --gold-dim: rgba(201,168,76,0.08);
-}
+/* overlay */
+#overlay{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:900}
 
-html { scroll-behavior: auto; }
+/* cursor */
+.cur{position:fixed;width:7px;height:7px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:screen}
+.cur-ring{position:fixed;width:38px;height:38px;border:1px solid rgba(201,168,76,.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .3s,height .3s,border-color .3s}
 
-body {
-  background: var(--bg);
-  color: var(--cream);
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  overflow-x: hidden;
-  cursor: none;
-}
+/* nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:28px 60px;display:flex;justify-content:space-between;align-items:center;transition:opacity .5s}
+nav::before{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,8,5,.92),transparent);pointer-events:none}
+.nav-logo{font-size:.68rem;letter-spacing:.42em;color:var(--gold);text-transform:uppercase;position:relative}
+.nav-links{display:flex;gap:44px;list-style:none;position:relative}
+.nav-links a{font-size:.62rem;letter-spacing:.3em;color:var(--gold-mid);text-decoration:none;text-transform:uppercase;transition:color .4s}
+.nav-links a:hover{color:var(--cream)}
 
-/* ── TRANSITION OVERLAY ── */
-#transition-overlay {
-  position: fixed;
-  inset: 0;
-  background: #000;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 900;
-}
+/* ── HERO ── */
+#hero{position:relative;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#hero-canvas{position:absolute;inset:0;width:100%;height:100%}
+#hero-glow{position:absolute;width:900px;height:900px;left:50%;top:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(201,168,76,.09) 0%,transparent 62%);border-radius:50%;pointer-events:none;will-change:transform,opacity}
+.hero-inner{position:relative;z-index:2;text-align:center;padding:0 40px;will-change:transform,opacity}
+.hero-eyebrow{font-size:.62rem;letter-spacing:.55em;color:var(--gold);text-transform:uppercase;margin-bottom:32px;opacity:0}
+.hero-title{font-size:clamp(2.6rem,5.8vw,6.2rem);font-weight:300;line-height:1.05;letter-spacing:.13em;color:var(--cream);text-transform:uppercase;will-change:letter-spacing,opacity}
+.lw{display:inline-block;overflow:hidden;vertical-align:bottom}
+.li{display:inline-block;transform:translateY(110%)}
+.ws{display:inline-block;width:.42em}
+.hero-tagline{margin-top:34px;font-size:clamp(.9rem,1.4vw,1.25rem);font-style:italic;font-weight:300;letter-spacing:.08em;color:var(--gold-mid);opacity:0;will-change:opacity,transform}
+.scroll-hint{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:10px;opacity:0}
+.scroll-hint span{font-size:.54rem;letter-spacing:.45em;color:var(--gold-mid);text-transform:uppercase}
+.scroll-bar{width:1px;height:52px;background:linear-gradient(to bottom,var(--gold),transparent)}
 
-/* ── CURSOR ── */
-.cursor {
-  position: fixed; width: 7px; height: 7px;
-  background: var(--gold); border-radius: 50%;
-  pointer-events: none; z-index: 9999;
-  transform: translate(-50%,-50%);
-  mix-blend-mode: screen;
-}
-.cursor-ring {
-  position: fixed; width: 38px; height: 38px;
-  border: 1px solid rgba(201,168,76,0.45);
-  border-radius: 50%; pointer-events: none; z-index: 9998;
-  transform: translate(-50%,-50%);
-  transition: width .3s, height .3s, border-color .3s;
-}
+/* word masks */
+.wm{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.05em}
+.wi{display:inline-block;transform:translateY(115%);will-change:transform,opacity}
 
-/* ── NAV ── */
-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  padding: 28px 60px;
-  display: flex; justify-content: space-between; align-items: center;
-  transition: opacity .5s;
-}
-nav::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(to bottom, rgba(10,8,5,.95) 0%, transparent 100%);
-  pointer-events: none;
-}
-.nav-logo {
-  font-size: .7rem; letter-spacing: .4em; color: var(--gold);
-  text-transform: uppercase; font-weight: 400; position: relative;
-}
-.nav-links { display: flex; gap: 48px; list-style: none; position: relative; }
-.nav-links a {
-  font-size: .65rem; letter-spacing: .3em; color: var(--gold-mid);
-  text-decoration: none; text-transform: uppercase; transition: color .4s;
-}
-.nav-links a:hover { color: var(--cream); }
+/* shared */
+.container{max-width:1120px;margin:0 auto;padding:0 60px}
+.sec-hd{display:flex;align-items:center;gap:26px;margin-bottom:70px}
+.gl{height:1px;width:72px;flex-shrink:0;background:var(--gold);transform:scaleX(0);transform-origin:left;opacity:.5;will-change:transform}
+.st{font-size:clamp(1.7rem,2.8vw,2.6rem);font-weight:300;letter-spacing:.18em;text-transform:uppercase;color:var(--cream);opacity:0;transform:scale(1.65);filter:blur(14px);transform-origin:left center;will-change:transform,filter,opacity}
+.sl{font-size:.57rem;letter-spacing:.5em;color:var(--gold);text-transform:uppercase;margin-left:auto;flex-shrink:0;opacity:0;transform:translateX(22px)}
+.big-num{position:absolute;font-size:clamp(28vw,36vw,42vw);font-weight:300;font-style:italic;line-height:1;color:rgba(201,168,76,.032);pointer-events:none;user-select:none;will-change:transform;z-index:0}
+.side-label{position:absolute;left:24px;top:50%;transform:translateY(-50%) rotate(-90deg);transform-origin:center;font-size:.5rem;letter-spacing:.55em;color:rgba(201,168,76,.22);text-transform:uppercase;white-space:nowrap;pointer-events:none}
 
-/* ══════════════════════════════════════════
-   HERO
-══════════════════════════════════════════ */
-#hero {
-  position: relative; width: 100vw; height: 100vh;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  overflow: hidden;
-}
-#hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-#hero-glow {
-  position: absolute; width: 800px; height: 800px;
-  left: 50%; top: 50%; transform: translate(-50%,-50%);
-  background: radial-gradient(circle, rgba(201,168,76,.09) 0%, transparent 65%);
-  pointer-events: none; border-radius: 50%;
-}
-.hero-inner {
-  position: relative; z-index: 2;
-  text-align: center; padding: 0 40px;
-}
-.hero-eyebrow {
-  font-size: .62rem; letter-spacing: .55em; color: var(--gold);
-  text-transform: uppercase; margin-bottom: 32px; opacity: 0;
-}
-.hero-title {
-  font-size: clamp(2.6rem, 5.8vw, 6.2rem);
-  font-weight: 300; line-height: 1.05;
-  letter-spacing: .13em; color: var(--cream);
-  text-transform: uppercase;
-}
-.letter-wrap { display: inline-block; overflow: hidden; vertical-align: bottom; }
-.letter { display: inline-block; transform: translateY(110%); }
-.word-space { display: inline-block; width: .42em; }
+/* ── ABOUT ── */
+#about{position:relative;height:100vh;display:flex;flex-direction:column;justify-content:center;overflow:hidden;padding-top:100px}
+.about-glow{position:absolute;inset:0;background:radial-gradient(ellipse at 18% 55%,rgba(201,168,76,.03) 0%,transparent 52%),radial-gradient(ellipse at 82% 40%,rgba(201,168,76,.02) 0%,transparent 52%);pointer-events:none;will-change:transform}
+#aboutText{font-size:clamp(1.35rem,2.2vw,2.1rem);font-weight:300;line-height:1.72;color:var(--cream);position:relative;z-index:1}
+.about-cap{margin-top:52px;font-size:.7rem;letter-spacing:.35em;color:var(--gold-mid);text-transform:uppercase;opacity:0;position:relative;z-index:1}
 
-.hero-tagline {
-  margin-top: 36px;
-  font-size: clamp(.95rem, 1.5vw, 1.3rem);
-  font-style: italic; font-weight: 300;
-  letter-spacing: .08em; color: var(--gold-mid); opacity: 0;
-}
-.hero-scroll-hint {
-  position: absolute; bottom: 48px; left: 50%; transform: translateX(-50%);
-  z-index: 2; display: flex; flex-direction: column; align-items: center;
-  gap: 10px; opacity: 0;
-}
-.hero-scroll-hint span {
-  font-size: .55rem; letter-spacing: .45em; color: var(--gold-mid); text-transform: uppercase;
-}
-.scroll-line {
-  width: 1px; height: 56px;
-  background: linear-gradient(to bottom, var(--gold), transparent);
-}
+/* ── ENSEMBLE ── */
+#ensemble{position:relative}
+#ens-inner{width:100vw;height:100vh;overflow:hidden;position:relative}
+#ens-track{display:flex;width:calc(7 * 100vw);height:100vh;will-change:transform}
+.icard{width:100vw;height:100vh;flex-shrink:0;position:relative;background:#12100d;overflow:hidden;display:flex;align-items:flex-end}
+.cbg{position:absolute;inset:0;background-size:cover;background-position:center;transform:scale(1.12);will-change:transform}
+.cov{position:absolute;inset:0;background:linear-gradient(to right,rgba(10,8,5,.94) 0%,rgba(10,8,5,.5) 55%,rgba(10,8,5,.18) 100%),linear-gradient(to top,rgba(10,8,5,.88) 0%,transparent 55%)}
+.cc{position:relative;z-index:2;padding:0 8% 9%}
+.cn{display:block;font-size:.57rem;letter-spacing:.5em;color:var(--gold);text-transform:uppercase;margin-bottom:20px;opacity:0;transform:translateX(-65px)}
+.cname{display:block;font-size:clamp(4rem,9.5vw,10rem);font-weight:300;letter-spacing:.06em;color:var(--cream);line-height:.95;opacity:0;transform:translateX(-85px)}
+.cori{display:block;margin-top:22px;font-size:clamp(.68rem,.95vw,.9rem);letter-spacing:.32em;color:var(--gold-mid);text-transform:uppercase;opacity:0;transform:translateX(-50px)}
+.ens-label{position:absolute;top:34px;left:54px;z-index:3;display:flex;align-items:center;gap:18px}
+.ens-label span{font-size:.57rem;letter-spacing:.5em;color:var(--gold);text-transform:uppercase}
+.ens-label::after{content:'';width:50px;height:1px;background:var(--gold);opacity:.38}
 
-/* ══════════════════════════════════════════
-   WORD SPLIT
-══════════════════════════════════════════ */
-.word-mask {
-  display: inline-block; overflow: hidden;
-  vertical-align: bottom; padding-bottom: .06em;
-}
-.word-inner { display: inline-block; transform: translateY(115%); }
+/* ── CONCERTS ── */
+#concerts{position:relative;padding:160px 0;overflow:hidden}
+.crow{position:relative;padding:40px 0;clip-path:inset(0 100% 0 0);will-change:clip-path}
+.cri{display:grid;grid-template-columns:155px 1fr 1fr auto;align-items:center;gap:22px}
+.cbl{position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(to right,rgba(201,168,76,.4),rgba(201,168,76,.05));transform:scaleX(0);transform-origin:left;will-change:transform}
+.cdate{font-size:.67rem;letter-spacing:.22em;color:var(--gold);text-transform:uppercase}
+.cvenue{font-size:clamp(1.05rem,1.6vw,1.45rem);font-weight:300;letter-spacing:.04em;color:var(--cream)}
+.ccity{font-size:.67rem;letter-spacing:.28em;color:var(--gold-mid);text-transform:uppercase}
+.ctag{font-size:.54rem;letter-spacing:.24em;color:var(--bg);background:var(--gold);padding:7px 13px;text-transform:uppercase}
 
-/* ══════════════════════════════════════════
-   SECTION COMMONS
-══════════════════════════════════════════ */
-.container { max-width: 1120px; margin: 0 auto; padding: 0 60px; }
+/* ── CONTACT ── */
+#contact{padding:160px 0 120px;text-align:center;overflow:hidden}
+.cont-eye{font-size:.6rem;letter-spacing:.55em;color:var(--gold);text-transform:uppercase;margin-bottom:56px;opacity:0;transform:translateY(28px)}
+.cont-email{font-size:clamp(1.2rem,2.6vw,2.6rem);font-weight:300;letter-spacing:.06em;color:var(--cream);text-decoration:none;display:inline-block;position:relative;opacity:0;transform:translateY(42px)}
+.cont-email::after{content:'';position:absolute;bottom:-6px;left:0;right:0;height:1px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .7s cubic-bezier(.16,1,.3,1)}
+.cont-email:hover::after{transform:scaleX(1)}
+.cont-rule{width:190px;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);margin:76px auto 0;opacity:0}
 
-.section-header {
-  display: flex; align-items: center; gap: 28px;
-  margin-bottom: 72px; overflow: hidden;
-}
-.grow-line {
-  height: 1px; width: 80px; flex-shrink: 0;
-  background: var(--gold); transform: scaleX(0); transform-origin: left; opacity: .5;
-}
-.section-title {
-  font-size: clamp(1.8rem, 3vw, 2.8rem);
-  font-weight: 300; letter-spacing: .18em;
-  text-transform: uppercase; color: var(--cream);
-  opacity: 0; transform: scale(1.6); filter: blur(16px);
-  transform-origin: left center;
-}
-.section-label-small {
-  font-size: .58rem; letter-spacing: .5em; color: var(--gold);
-  text-transform: uppercase; margin-left: auto; flex-shrink: 0;
-  opacity: 0; transform: translateX(20px);
-}
-.section-parallax-num {
-  position: absolute; font-size: 28vw; font-weight: 300; line-height: 1;
-  color: rgba(201,168,76,.035); pointer-events: none; will-change: transform;
-  right: -2vw; top: -4vw; z-index: 0; user-select: none;
-}
+/* footer */
+footer{padding:42px 60px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(201,168,76,.07)}
+.fc,.fm{font-size:.57rem;letter-spacing:.3em;text-transform:uppercase}
+.fc{color:var(--gold-mid)}.fm{color:rgba(138,122,90,.28)}
 
-/* ══════════════════════════════════════════
-   ABOUT
-══════════════════════════════════════════ */
-#about {
-  position: relative; padding: 160px 0; overflow: hidden;
-}
-.about-parallax-bg {
-  position: absolute; inset: -30%; pointer-events: none;
-  background:
-    radial-gradient(ellipse at 20% 50%, rgba(201,168,76,.025) 0%, transparent 55%),
-    radial-gradient(ellipse at 80% 50%, rgba(201,168,76,.015) 0%, transparent 55%);
-  will-change: transform;
-}
-#aboutText {
-  font-size: clamp(1.4rem, 2.5vw, 2.4rem);
-  font-weight: 300; line-height: 1.7;
-  letter-spacing: .01em; color: var(--cream);
-  position: relative; z-index: 1;
-}
-.about-caption {
-  margin-top: 64px; font-size: .72rem; letter-spacing: .35em;
-  color: var(--gold-mid); text-transform: uppercase;
-  opacity: 0; transform: translateY(20px); position: relative; z-index: 1;
-}
-
-/* ══════════════════════════════════════════
-   ENSEMBLE — horizontal pin
-══════════════════════════════════════════ */
-#ensemble { position: relative; }
-#ensemble-inner {
-  width: 100vw; height: 100vh; overflow: hidden; position: relative;
-}
-#ensemble-track {
-  display: flex; width: calc(7 * 100vw); height: 100vh;
-  will-change: transform;
-}
-.instrument-card {
-  width: 100vw; height: 100vh;
-  flex-shrink: 0; position: relative;
-  background-color: #12100d;
-  overflow: hidden;
-  display: flex; align-items: flex-end;
-}
-.card-bg {
-  position: absolute; inset: 0;
-  background-size: cover; background-position: center;
-  transform: scale(1.12); will-change: transform;
-  transition: none;
-}
-.card-overlay {
-  position: absolute; inset: 0;
-  background:
-    linear-gradient(to right, rgba(10,8,5,.92) 0%, rgba(10,8,5,.5) 50%, rgba(10,8,5,.2) 100%),
-    linear-gradient(to top, rgba(10,8,5,.8) 0%, transparent 60%);
-}
-.card-content {
-  position: relative; z-index: 2;
-  padding: 0 8% 10%;
-}
-.card-num {
-  display: block; font-size: .6rem; letter-spacing: .5em;
-  color: var(--gold); text-transform: uppercase; margin-bottom: 24px;
-  opacity: 0; transform: translateX(-50px);
-}
-.card-name {
-  display: block;
-  font-size: clamp(3.5rem, 8vw, 8rem);
-  font-weight: 300; letter-spacing: .08em;
-  color: var(--cream); line-height: 1;
-  opacity: 0; transform: translateX(-70px);
-}
-.card-origin {
-  display: block; margin-top: 20px;
-  font-size: clamp(.75rem, 1.1vw, 1rem);
-  letter-spacing: .3em; color: var(--gold-mid);
-  text-transform: uppercase;
-  opacity: 0; transform: translateX(-40px);
-}
-.card-progress {
-  position: absolute; bottom: 40px; right: 60px;
-  font-size: .6rem; letter-spacing: .4em; color: rgba(201,168,76,.4);
-  text-transform: uppercase; z-index: 2;
-}
-
-/* Ensemble label overlay */
-.ensemble-section-label {
-  position: absolute; top: 40px; left: 60px; z-index: 3;
-  display: flex; align-items: center; gap: 20px;
-}
-.ensemble-section-label span {
-  font-size: .6rem; letter-spacing: .5em; color: var(--gold);
-  text-transform: uppercase;
-}
-.ensemble-section-label::after {
-  content: ''; width: 60px; height: 1px; background: var(--gold); opacity: .4;
-  display: block;
-}
-
-/* ══════════════════════════════════════════
-   CONCERTS
-══════════════════════════════════════════ */
-#concerts { position: relative; padding: 160px 0; overflow: hidden; }
-.concert-row {
-  position: relative; padding: 40px 0;
-  opacity: 0; transform: translateX(-70px);
-}
-.concert-grow-line {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(to right, rgba(201,168,76,.4), rgba(201,168,76,.1));
-  transform: scaleX(0); transform-origin: left;
-}
-.concert-row:last-child .concert-grow-line { opacity: 0; }
-.concert-row-inner {
-  display: grid;
-  grid-template-columns: 160px 1fr 1fr auto;
-  align-items: center; gap: 24px;
-}
-.concert-date {
-  font-size: .68rem; letter-spacing: .22em; color: var(--gold);
-  text-transform: uppercase; opacity: 0; transform: translateY(10px);
-}
-.concert-venue {
-  font-size: clamp(1.1rem, 1.8vw, 1.55rem);
-  font-weight: 300; letter-spacing: .04em; color: var(--cream);
-  opacity: 0; transform: translateY(12px);
-}
-.concert-city {
-  font-size: .68rem; letter-spacing: .28em; color: var(--gold-mid);
-  text-transform: uppercase; opacity: 0; transform: translateY(10px);
-}
-.concert-tag {
-  font-size: .55rem; letter-spacing: .25em; color: var(--bg);
-  background: var(--gold); padding: 7px 14px;
-  text-transform: uppercase; opacity: 0; transform: translateY(10px);
-}
-
-/* ══════════════════════════════════════════
-   CONTACT
-══════════════════════════════════════════ */
-#contact { padding: 160px 0 120px; text-align: center; overflow: hidden; }
-.contact-eyebrow {
-  font-size: .6rem; letter-spacing: .55em; color: var(--gold);
-  text-transform: uppercase; margin-bottom: 56px;
-  opacity: 0; transform: translateY(24px);
-}
-.contact-email {
-  font-size: clamp(1.3rem, 2.8vw, 2.8rem);
-  font-weight: 300; letter-spacing: .06em; color: var(--cream);
-  text-decoration: none; display: inline-block; position: relative;
-  opacity: 0; transform: translateY(36px);
-}
-.contact-email::after {
-  content: ''; position: absolute; bottom: -6px; left: 0; right: 0;
-  height: 1px; background: var(--gold);
-  transform: scaleX(0); transform-origin: left;
-  transition: transform .7s cubic-bezier(.16,1,.3,1);
-}
-.contact-email:hover::after { transform: scaleX(1); }
-.contact-rule {
-  width: 200px; height: 1px;
-  background: linear-gradient(to right, transparent, var(--gold), transparent);
-  margin: 80px auto 0; opacity: 0;
-}
-
-/* ══════════════════════════════════════════
-   FOOTER
-══════════════════════════════════════════ */
-footer {
-  padding: 44px 60px;
-  display: flex; justify-content: space-between; align-items: center;
-  border-top: 1px solid rgba(201,168,76,.07);
-}
-.footer-copy, .footer-mark {
-  font-size: .58rem; letter-spacing: .3em; text-transform: uppercase;
-}
-.footer-copy { color: var(--gold-mid); }
-.footer-mark { color: rgba(138,122,90,.3); }
-
-/* ── MOBILE ── */
-@media (max-width: 768px) {
-  nav { padding: 22px 24px; }
-  .nav-links { display: none; }
-  .container { padding: 0 24px; }
-  #about, #concerts, #contact { padding: 100px 0; }
-  .concert-row-inner { grid-template-columns: 1fr 1fr; }
-  .concert-tag { display: none; }
-  footer { flex-direction: column; gap: 14px; text-align: center; }
-  .section-parallax-num { font-size: 45vw; }
+@media(max-width:768px){
+  nav{padding:22px 22px}.nav-links{display:none}
+  .container{padding:0 22px}
+  #concerts{padding:100px 0}
+  .cri{grid-template-columns:1fr 1fr}.ctag{display:none}
+  footer{flex-direction:column;gap:14px;text-align:center}
+  .big-num{font-size:55vw}.side-label{display:none}
 }
 </style>
 </head>
 <body>
 
-<!-- Cinematic transition overlay -->
-<div id="transition-overlay"></div>
+<div id="overlay"></div>
+<div class="cur" id="cur"></div>
+<div class="cur-ring" id="curRing"></div>
 
-<!-- Cursor -->
-<div class="cursor" id="cursor"></div>
-<div class="cursor-ring" id="cursorRing"></div>
-
-<!-- Nav -->
 <nav id="nav">
   <div class="nav-logo">FSC</div>
   <ul class="nav-links">
@@ -382,624 +126,391 @@ footer {
   </ul>
 </nav>
 
-<!-- ══════════════════════════════════════════
-     HERO
-══════════════════════════════════════════ -->
+<!-- HERO -->
 <section id="hero">
   <canvas id="hero-canvas"></canvas>
   <div id="hero-glow"></div>
-  <div class="hero-inner">
-    <p class="hero-eyebrow" id="heroEyebrow">Est. 2024 &nbsp;·&nbsp; World Music</p>
+  <div class="hero-inner" id="heroInner">
+    <p class="hero-eyebrow" id="heroEye">Est. 2024 &nbsp;·&nbsp; World Music</p>
     <h1 class="hero-title" id="heroTitle"></h1>
-    <p class="hero-tagline" id="heroTagline">Where the Silk Road Sings.</p>
+    <p class="hero-tagline" id="heroTag">Where the Silk Road Sings.</p>
   </div>
-  <div class="hero-scroll-hint" id="scrollHint">
+  <div class="scroll-hint" id="scrollHint">
     <span>Scroll</span>
-    <div class="scroll-line" id="scrollLine"></div>
+    <div class="scroll-bar" id="scrollBar"></div>
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════
-     ABOUT
-══════════════════════════════════════════ -->
+<!-- ABOUT -->
 <section id="about">
-  <div class="about-parallax-bg" id="aboutParallaxBg"></div>
-  <div class="section-parallax-num" id="aboutParallaxNum">01</div>
+  <div class="about-glow" id="aboutGlow"></div>
+  <div class="big-num" id="aboutNum" style="right:-4vw;bottom:-6vw">I</div>
+  <div class="side-label">Fons Sophiae Collective — Est. 2024</div>
   <div class="container">
-    <div class="section-header">
-      <div class="grow-line" id="aboutLine"></div>
-      <h2 class="section-title" id="aboutTitle">About</h2>
-      <span class="section-label-small" id="aboutLabelSmall">Fons Sophiae</span>
+    <div class="sec-hd">
+      <div class="gl" id="aboutGL"></div>
+      <h2 class="st" id="aboutST">About</h2>
+      <span class="sl" id="aboutSL">Fons Sophiae</span>
     </div>
     <div id="aboutText"></div>
-    <p class="about-caption" id="aboutCaption">Eight Nations &nbsp;·&nbsp; One Voice</p>
+    <p class="about-cap" id="aboutCap">Eight Nations &nbsp;·&nbsp; One Voice</p>
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════
-     ENSEMBLE — pinned horizontal scroll
-══════════════════════════════════════════ -->
+<!-- ENSEMBLE -->
 <section id="ensemble">
-  <div id="ensemble-inner">
-    <div class="ensemble-section-label">
-      <span>II &nbsp; The Ensemble</span>
-    </div>
-    <div id="ensemble-track">
-
-      <!-- 01 Ney -->
-      <div class="instrument-card">
-        <div class="card-bg" style="background-image:url('https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&w=1920&q=80')"></div>
-        <div class="card-overlay"></div>
-        <div class="card-content">
-          <span class="card-num">01 / 07</span>
-          <span class="card-name">Ney</span>
-          <span class="card-origin">Turkey &amp; Persia</span>
-        </div>
-        <div class="card-progress">Scroll to explore</div>
+  <div id="ens-inner">
+    <div class="ens-label"><span>II &nbsp; The Ensemble</span></div>
+    <div id="ens-track">
+      <div class="icard">
+        <div class="cbg" style="background-image:url('https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&w=1920&q=80')"></div>
+        <div class="cov"></div>
+        <div class="cc"><span class="cn">01 / 07</span><span class="cname">Ney</span><span class="cori">Turkey &amp; Persia</span></div>
       </div>
-
-      <!-- 02 Oud -->
-      <div class="instrument-card">
-        <div class="card-bg" style="background-image:url('https://images.unsplash.com/photo-1574939571745-364bf21d1d95?auto=format&fit=crop&w=1920&q=80')"></div>
-        <div class="card-overlay"></div>
-        <div class="card-content">
-          <span class="card-num">02 / 07</span>
-          <span class="card-name">Oud</span>
-          <span class="card-origin">Morocco &amp; Middle East</span>
-        </div>
+      <div class="icard">
+        <div class="cbg" style="background-image:url('https://images.unsplash.com/photo-1574939571745-364bf21d1d95?auto=format&fit=crop&w=1920&q=80')"></div>
+        <div class="cov"></div>
+        <div class="cc"><span class="cn">02 / 07</span><span class="cname">Oud</span><span class="cori">Morocco &amp; Middle East</span></div>
       </div>
-
-      <!-- 03 Balaban -->
-      <div class="instrument-card">
-        <div class="card-bg" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80')"></div>
-        <div class="card-overlay"></div>
-        <div class="card-content">
-          <span class="card-num">03 / 07</span>
-          <span class="card-name">Balaban</span>
-          <span class="card-origin">Azerbaijan</span>
-        </div>
+      <div class="icard">
+        <div class="cbg" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80')"></div>
+        <div class="cov"></div>
+        <div class="cc"><span class="cn">03 / 07</span><span class="cname">Balaban</span><span class="cori">Azerbaijan</span></div>
       </div>
-
-      <!-- 04 Bağlama -->
-      <div class="instrument-card">
-        <div class="card-bg" style="background-image:url('https://images.unsplash.com/photo-1519677100203-a0e668c92439?auto=format&fit=crop&w=1920&q=80')"></div>
-        <div class="card-overlay"></div>
-        <div class="card-content">
-          <span class="card-num">04 / 07</span>
-          <span class="card-name">Bağlama</span>
-          <span class="card-origin">Türkiye</span>
-        </div>
+      <div class="icard">
+        <div class="cbg" style="background-image:url('https://images.unsplash.com/photo-1519677100203-a0e668c92439?auto=format&fit=crop&w=1920&q=80')"></div>
+        <div class="cov"></div>
+        <div class="cc"><span class="cn">04 / 07</span><span class="cname">Bağlama</span><span class="cori">Türkiye</span></div>
       </div>
-
-      <!-- 05 Kemane -->
-      <div class="instrument-card">
-        <div class="card-bg" style="background-image:url('https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&w=1920&q=80')"></div>
-        <div class="card-overlay"></div>
-        <div class="card-content">
-          <span class="card-num">05 / 07</span>
-          <span class="card-name">Kemane</span>
-          <span class="card-origin">Azerbaijan &amp; Iran</span>
-        </div>
+      <div class="icard">
+        <div class="cbg" style="background-image:url('https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&w=1920&q=80')"></div>
+        <div class="cov"></div>
+        <div class="cc"><span class="cn">05 / 07</span><span class="cname">Kemane</span><span class="cori">Azerbaijan &amp; Iran</span></div>
       </div>
-
-      <!-- 06 Erhu -->
-      <div class="instrument-card">
-        <div class="card-bg" style="background-image:url('https://images.unsplash.com/photo-1547891654-e66ed7ebb968?auto=format&fit=crop&w=1920&q=80')"></div>
-        <div class="card-overlay"></div>
-        <div class="card-content">
-          <span class="card-num">06 / 07</span>
-          <span class="card-name">Erhu</span>
-          <span class="card-origin">China</span>
-        </div>
+      <div class="icard">
+        <div class="cbg" style="background-image:url('https://images.unsplash.com/photo-1547891654-e66ed7ebb968?auto=format&fit=crop&w=1920&q=80')"></div>
+        <div class="cov"></div>
+        <div class="cc"><span class="cn">06 / 07</span><span class="cname">Erhu</span><span class="cori">China</span></div>
       </div>
-
-      <!-- 07 Flamenco Guitar -->
-      <div class="instrument-card">
-        <div class="card-bg" style="background-image:url('https://images.unsplash.com/photo-1511882150382-421056c89033?auto=format&fit=crop&w=1920&q=80')"></div>
-        <div class="card-overlay"></div>
-        <div class="card-content">
-          <span class="card-num">07 / 07</span>
-          <span class="card-name">Flamenco Guitar</span>
-          <span class="card-origin">Spain</span>
-        </div>
+      <div class="icard">
+        <div class="cbg" style="background-image:url('https://images.unsplash.com/photo-1511882150382-421056c89033?auto=format&fit=crop&w=1920&q=80')"></div>
+        <div class="cov"></div>
+        <div class="cc"><span class="cn">07 / 07</span><span class="cname">Flamenco Guitar</span><span class="cori">Spain</span></div>
       </div>
-
-    </div><!-- /ensemble-track -->
-  </div><!-- /ensemble-inner -->
-</section>
-
-<!-- ══════════════════════════════════════════
-     CONCERTS
-══════════════════════════════════════════ -->
-<section id="concerts">
-  <div class="section-parallax-num" id="concertsParallaxNum">03</div>
-  <div class="container">
-    <div class="section-header">
-      <div class="grow-line" id="concertsLine"></div>
-      <h2 class="section-title" id="concertsTitle">Concerts</h2>
-      <span class="section-label-small" id="concertsLabelSmall">2025 Season</span>
-    </div>
-    <div class="concerts-list" id="concertsList">
-
-      <div class="concert-row">
-        <div class="concert-row-inner">
-          <span class="concert-date">Sep 12, 2025</span>
-          <span class="concert-venue">Barbican Centre</span>
-          <span class="concert-city">London, United Kingdom</span>
-          <span class="concert-tag">Premiere</span>
-        </div>
-        <div class="concert-grow-line"></div>
-      </div>
-
-      <div class="concert-row">
-        <div class="concert-row-inner">
-          <span class="concert-date">Oct 04, 2025</span>
-          <span class="concert-venue">Philharmonie de Paris</span>
-          <span class="concert-city">Paris, France</span>
-          <span class="concert-tag">Sold Out</span>
-        </div>
-        <div class="concert-grow-line"></div>
-      </div>
-
-      <div class="concert-row">
-        <div class="concert-row-inner">
-          <span class="concert-date">Oct 19, 2025</span>
-          <span class="concert-venue">Konzerthaus Berlin</span>
-          <span class="concert-city">Berlin, Germany</span>
-          <span class="concert-tag">Available</span>
-        </div>
-        <div class="concert-grow-line"></div>
-      </div>
-
-      <div class="concert-row">
-        <div class="concert-row-inner">
-          <span class="concert-date">Nov 08, 2025</span>
-          <span class="concert-venue">Teatro Real</span>
-          <span class="concert-city">Madrid, Spain</span>
-          <span class="concert-tag">Available</span>
-        </div>
-        <div class="concert-grow-line"></div>
-      </div>
-
-      <div class="concert-row">
-        <div class="concert-row-inner">
-          <span class="concert-date">Nov 22, 2025</span>
-          <span class="concert-venue">Shanghai Concert Hall</span>
-          <span class="concert-city">Shanghai, China</span>
-          <span class="concert-tag">Available</span>
-        </div>
-        <div class="concert-grow-line"></div>
-      </div>
-
-      <div class="concert-row">
-        <div class="concert-row-inner">
-          <span class="concert-date">Dec 06, 2025</span>
-          <span class="concert-venue">Cemal Reşit Rey Salonu</span>
-          <span class="concert-city">Istanbul, Türkiye</span>
-          <span class="concert-tag">Closing Night</span>
-        </div>
-        <div class="concert-grow-line"></div>
-      </div>
-
     </div>
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════
-     CONTACT
-══════════════════════════════════════════ -->
+<!-- CONCERTS -->
+<section id="concerts">
+  <div class="big-num" id="concertsNum" style="right:-2vw;top:-4vw">III</div>
+  <div class="side-label">2025 Season</div>
+  <div class="container">
+    <div class="sec-hd">
+      <div class="gl" id="concGL"></div>
+      <h2 class="st" id="concST">Concerts</h2>
+      <span class="sl" id="concSL">2025 Season</span>
+    </div>
+    <div id="concList">
+      <div class="crow"><div class="cri"><span class="cdate">Sep 12, 2025</span><span class="cvenue">Barbican Centre</span><span class="ccity">London, United Kingdom</span><span class="ctag">Premiere</span></div><div class="cbl"></div></div>
+      <div class="crow"><div class="cri"><span class="cdate">Oct 04, 2025</span><span class="cvenue">Philharmonie de Paris</span><span class="ccity">Paris, France</span><span class="ctag">Sold Out</span></div><div class="cbl"></div></div>
+      <div class="crow"><div class="cri"><span class="cdate">Oct 19, 2025</span><span class="cvenue">Konzerthaus Berlin</span><span class="ccity">Berlin, Germany</span><span class="ctag">Available</span></div><div class="cbl"></div></div>
+      <div class="crow"><div class="cri"><span class="cdate">Nov 08, 2025</span><span class="cvenue">Teatro Real</span><span class="ccity">Madrid, Spain</span><span class="ctag">Available</span></div><div class="cbl"></div></div>
+      <div class="crow"><div class="cri"><span class="cdate">Nov 22, 2025</span><span class="cvenue">Shanghai Concert Hall</span><span class="ccity">Shanghai, China</span><span class="ctag">Available</span></div><div class="cbl"></div></div>
+      <div class="crow"><div class="cri"><span class="cdate">Dec 06, 2025</span><span class="cvenue">Cemal Reşit Rey Salonu</span><span class="ccity">Istanbul, Türkiye</span><span class="ctag">Closing Night</span></div><div class="cbl"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
 <section id="contact">
-  <div class="container" style="display:flex;flex-direction:column;align-items:center;">
-    <p class="contact-eyebrow" id="contactEyebrow">IV &nbsp; Contact</p>
-    <a href="mailto:info@fonssophiae.com" class="contact-email" id="contactEmail">
-      info@fonssophiae.com
-    </a>
-    <div class="contact-rule" id="contactRule"></div>
+  <div class="container" style="display:flex;flex-direction:column;align-items:center">
+    <p class="cont-eye" id="contEye">IV &nbsp; Contact</p>
+    <a href="mailto:info@fonssophiae.com" class="cont-email" id="contEmail">info@fonssophiae.com</a>
+    <div class="cont-rule" id="contRule"></div>
   </div>
 </section>
 
 <footer>
-  <span class="footer-copy">© 2025 Fons Sophiae Collective. All rights reserved.</span>
-  <span class="footer-mark">Where the Silk Road Sings</span>
+  <span class="fc">© 2025 Fons Sophiae Collective. All rights reserved.</span>
+  <span class="fm">Where the Silk Road Sings</span>
 </footer>
 
-<!-- ══════════════════════════════════════════
-     SCRIPTS
-══════════════════════════════════════════ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
 <script>
-/* ══════════════════════════════════════════
-   LENIS
-══════════════════════════════════════════ */
+/* ── LENIS: heavy, cinematic weight ── */
 const lenis = new Lenis({
-  duration: 1.6,
+  duration: 2.0,
   easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
   smoothTouch: false,
 });
-gsap.ticker.add(time => lenis.raf(time * 1000));
-gsap.ticker.lagSmoothing(0);
 gsap.registerPlugin(ScrollTrigger);
+gsap.ticker.add(t => lenis.raf(t * 1000));
+gsap.ticker.lagSmoothing(0);
 
-/* ══════════════════════════════════════════
-   CURSOR
-══════════════════════════════════════════ */
-const cursor = document.getElementById('cursor');
-const cursorRing = document.getElementById('cursorRing');
-let mx = window.innerWidth / 2, my = window.innerHeight / 2;
-let rx = mx, ry = my;
-document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-(function animCursor() {
-  rx += (mx - rx) * 0.1;
-  ry += (my - ry) * 0.1;
-  cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
-  cursorRing.style.left = rx + 'px'; cursorRing.style.top = ry + 'px';
-  requestAnimationFrame(animCursor);
+/* ── CURSOR ── */
+const cur = document.getElementById('cur');
+const curRing = document.getElementById('curRing');
+let mx = innerWidth/2, my = innerHeight/2, rx = mx, ry = my;
+addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+(function loop(){ rx+=(mx-rx)*.1; ry+=(my-ry)*.1;
+  cur.style.cssText=`left:${mx}px;top:${my}px`;
+  curRing.style.cssText=`left:${rx}px;top:${ry}px`;
+  requestAnimationFrame(loop);
 })();
-document.querySelectorAll('a, .instrument-card, .concert-row').forEach(el => {
-  el.addEventListener('mouseenter', () => {
-    cursorRing.style.width = '60px'; cursorRing.style.height = '60px';
-    cursorRing.style.borderColor = 'rgba(201,168,76,.85)';
-  });
-  el.addEventListener('mouseleave', () => {
-    cursorRing.style.width = '38px'; cursorRing.style.height = '38px';
-    cursorRing.style.borderColor = 'rgba(201,168,76,.45)';
-  });
+document.querySelectorAll('a,.icard,.crow').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ curRing.style.width='60px';curRing.style.height='60px';curRing.style.borderColor='rgba(201,168,76,.85)'; });
+  el.addEventListener('mouseleave',()=>{ curRing.style.width='38px';curRing.style.height='38px';curRing.style.borderColor='rgba(201,168,76,.4)'; });
 });
 
-/* ══════════════════════════════════════════
-   CINEMATIC TRANSITION FLASH
-══════════════════════════════════════════ */
-const overlay = document.getElementById('transition-overlay');
-let overlayActive = false;
-function flashSection() {
-  if (overlayActive) return;
-  overlayActive = true;
-  gsap.timeline({
-    onComplete: () => { overlayActive = false; }
-  })
-  .to(overlay, { opacity: 1, duration: 0.38, ease: 'power2.in' })
-  .to(overlay, { opacity: 0, duration: 0.65, ease: 'power2.out', delay: 0.05 });
-}
-['#about', '#ensemble', '#concerts', '#contact'].forEach(id => {
-  const el = document.querySelector(id);
-  if (!el) return;
-  ScrollTrigger.create({
-    trigger: el,
-    start: 'top 25%',
-    onEnter: () => flashSection(),
-    onEnterBack: () => flashSection(),
-  });
-});
-
-/* ══════════════════════════════════════════
-   CANVAS PARTICLES (ember drift)
-══════════════════════════════════════════ */
+/* ── CANVAS EMBERS ── */
 const canvas = document.getElementById('hero-canvas');
 const ctx = canvas.getContext('2d');
 let W, H;
-function resizeCanvas() {
-  W = canvas.width = window.innerWidth;
-  H = canvas.height = window.innerHeight;
-}
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
+const resize = () => { W = canvas.width = innerWidth; H = canvas.height = innerHeight; };
+resize(); addEventListener('resize', () => { resize(); ScrollTrigger.refresh(); });
+
+let scrollVel = 0;
+lenis.on('scroll', ({ scroll }) => {
+  const delta = Math.abs(scroll - (lenis._lastScroll || scroll));
+  scrollVel = Math.min(1, delta / 25);
+  lenis._lastScroll = scroll;
+});
 
 class Ember {
-  constructor() { this.reset(true); }
-  reset(initial) {
-    this.x = Math.random() * W;
-    this.y = initial ? Math.random() * H : H + 8;
-    this.r = Math.random() * 1.6 + 0.2;
-    this.vy = -(Math.random() * 0.5 + 0.2);
-    this.vx = (Math.random() - 0.5) * 0.25;
-    this.life = 0;
-    this.maxLife = Math.random() * 280 + 180;
-    this.maxA = Math.random() * 0.55 + 0.1;
-    this.a = 0;
-    this.pulse = Math.random() * Math.PI * 2;
-    this.wobble = Math.random() * 0.02 - 0.01;
+  constructor(){ this.init(true); }
+  init(random){
+    this.x = Math.random()*W;
+    this.y = random ? Math.random()*H : H+6;
+    this.r = Math.random()*1.5+0.25;
+    this.vy0 = -(Math.random()*.4+.18);
+    this.vx = (Math.random()-.5)*.2;
+    this.t = 0; this.T = Math.random()*260+160;
+    this.aMax = Math.random()*.5+.1;
+    this.ph = Math.random()*Math.PI*2;
   }
-  update() {
-    this.x += this.vx + Math.sin(this.life * 0.03) * 0.3;
-    this.y += this.vy;
-    this.life++;
-    this.pulse += 0.018;
-    const half = this.maxLife * 0.45;
-    if (this.life < half) this.a = (this.life / half) * this.maxA;
-    else this.a = ((this.maxLife - this.life) / (this.maxLife - half)) * this.maxA;
-    if (this.life >= this.maxLife || this.y < -10) this.reset(false);
+  step(){
+    const boost = 1 + scrollVel * 4;
+    this.x += this.vx + Math.sin(this.t*.025)*.26;
+    this.y += this.vy0 * boost;
+    this.t++; this.ph += .02;
+    const h = this.T*.4;
+    const a = this.t < h ? (this.t/h) : ((this.T-this.t)/(this.T-h));
+    this.a = Math.max(0, a) * this.aMax * (1+Math.sin(this.ph)*.18);
+    if(this.t >= this.T || this.y < -8) this.init(false);
   }
-  draw() {
-    const flicker = 1 + Math.sin(this.pulse) * 0.2;
-    ctx.save();
-    ctx.globalAlpha = this.a * flicker;
-    ctx.fillStyle = '#c9a84c';
-    ctx.shadowColor = '#c9a84c';
-    ctx.shadowBlur = 4;
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-    ctx.fill();
+  draw(){
+    ctx.save(); ctx.globalAlpha = this.a;
+    ctx.fillStyle='#c9a84c'; ctx.shadowColor='#c9a84c'; ctx.shadowBlur=4;
+    ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fill();
     ctx.restore();
   }
 }
+const embers = Array.from({length:200},()=>new Ember());
+let hmx=W/2, hmy=H/2;
+addEventListener('mousemove',e=>{ hmx=e.clientX; hmy=e.clientY; });
+(function frame(){
+  ctx.clearRect(0,0,W,H);
+  const vg=ctx.createRadialGradient(W/2,H/2,H*.04,W/2,H/2,H*.9);
+  vg.addColorStop(0,'rgba(10,8,5,0)'); vg.addColorStop(1,'rgba(10,8,5,.92)');
+  ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
+  const mg=ctx.createRadialGradient(hmx,hmy,0,hmx,hmy,300);
+  mg.addColorStop(0,'rgba(201,168,76,.028)'); mg.addColorStop(1,'rgba(201,168,76,0)');
+  ctx.fillStyle=mg; ctx.fillRect(0,0,W,H);
+  embers.forEach(e=>{ e.step(); e.draw(); });
+  requestAnimationFrame(frame);
+})();
 
-const embers = Array.from({ length: 180 }, () => new Ember());
-let heroMouseX = W / 2, heroMouseY = H / 2;
-document.addEventListener('mousemove', e => { heroMouseX = e.clientX; heroMouseY = e.clientY; });
-
-function drawHero() {
-  ctx.clearRect(0, 0, W, H);
-  const vg = ctx.createRadialGradient(W/2, H/2, H*.05, W/2, H/2, H*.9);
-  vg.addColorStop(0, 'rgba(10,8,5,0)');
-  vg.addColorStop(1, 'rgba(10,8,5,.9)');
-  ctx.fillStyle = vg;
-  ctx.fillRect(0, 0, W, H);
-  const mg = ctx.createRadialGradient(heroMouseX, heroMouseY, 0, heroMouseX, heroMouseY, 300);
-  mg.addColorStop(0, 'rgba(201,168,76,.03)');
-  mg.addColorStop(1, 'rgba(201,168,76,0)');
-  ctx.fillStyle = mg;
-  ctx.fillRect(0, 0, W, H);
-  embers.forEach(e => { e.update(); e.draw(); });
-  requestAnimationFrame(drawHero);
-}
-drawHero();
-
-/* ══════════════════════════════════════════
-   HERO GLOW PULSE
-══════════════════════════════════════════ */
-gsap.to('#hero-glow', {
-  scale: 1.35,
-  opacity: 0.55,
-  duration: 3.5,
-  ease: 'sine.inOut',
-  yoyo: true,
-  repeat: -1,
-});
-
-/* ══════════════════════════════════════════
-   HERO LETTERS
-══════════════════════════════════════════ */
+/* ── BUILD HERO TITLE ── */
 const titleEl = document.getElementById('heroTitle');
-const words = ['FONS', 'SOPHIAE', 'COLLECTIVE'];
-words.forEach((word, wi) => {
-  if (wi === 2) titleEl.appendChild(document.createElement('br'));
-  else if (wi > 0) {
-    const sp = document.createElement('span');
-    sp.className = 'word-space'; titleEl.appendChild(sp);
-  }
-  [...word].forEach(char => {
-    const wrap = document.createElement('span'); wrap.className = 'letter-wrap';
-    const inner = document.createElement('span'); inner.className = 'letter';
-    inner.textContent = char;
-    wrap.appendChild(inner); titleEl.appendChild(wrap);
+[['FONS','SOPHIAE'],['COLLECTIVE']].forEach((line,li)=>{
+  if(li>0) titleEl.appendChild(document.createElement('br'));
+  line.forEach((word,wi)=>{
+    if(wi>0){ const s=document.createElement('span'); s.className='ws'; titleEl.appendChild(s); }
+    [...word].forEach(ch=>{
+      const w=document.createElement('span'); w.className='lw';
+      const i=document.createElement('span'); i.className='li'; i.textContent=ch;
+      w.appendChild(i); titleEl.appendChild(w);
+    });
   });
 });
 
-/* HERO SCROLL HINT bounce */
-gsap.to('#scrollLine', {
-  scaleY: 0.6,
-  transformOrigin: 'top center',
-  duration: 1.1,
-  ease: 'power1.inOut',
-  yoyo: true,
-  repeat: -1,
+/* ── HERO GLOW PULSE ── */
+gsap.to('#hero-glow',{scale:1.45,opacity:.5,duration:3.8,ease:'sine.inOut',yoyo:true,repeat:-1});
+gsap.to('#scrollBar',{scaleY:.55,transformOrigin:'top',duration:1.1,ease:'power1.inOut',yoyo:true,repeat:-1});
+
+/* ── HERO INTRO (time-based) ── */
+gsap.timeline({delay:.35})
+  .to('#heroEye',{opacity:1,duration:1,ease:'power3.out'})
+  .to('.li',{y:'0%',duration:1.15,ease:'power4.out',stagger:.038},'-=.55')
+  .to('#heroTag',{opacity:1,duration:1.2,ease:'power2.out'},'-=.5')
+  .to('#scrollHint',{opacity:1,duration:1,ease:'power2.out'},'-=.5');
+
+/* ── HERO EXIT (scrubbed) ── */
+/* As user scrolls away: title letter-spacing expands and fades, glow blooms then vanishes */
+const heroExitTL = gsap.timeline();
+heroExitTL
+  .to('#heroInner',  { yPercent:-14, scale:1.07, duration:1 }, 0)
+  .to('#heroTitle',  { letterSpacing:'0.35em', opacity:.45, duration:1 }, 0)
+  .to('#heroTag',    { opacity:0, y:-22, duration:.55 }, 0)
+  .to('#heroEye',    { opacity:0, y:-18, duration:.5 }, .05)
+  .to('#hero-glow',  { scale:3.2, opacity:0, duration:1 }, 0)
+  .to('#scrollHint', { opacity:0, duration:.25 }, 0)
+  .to('#hero',       { opacity:0, duration:.4 }, .62);
+
+ScrollTrigger.create({
+  trigger:'#hero', start:'top top', end:'+=95vh',
+  pin:true, scrub:2.2, animation:heroExitTL,
 });
 
-const heroTL = gsap.timeline({ delay: 0.4 });
-heroTL
-  .to('#heroEyebrow', { opacity: 1, y: 0, duration: 1, ease: 'power3.out' })
-  .to('.letter', {
-    y: '0%', duration: 1.15, ease: 'power4.out', stagger: 0.038,
-  }, '-=0.5')
-  .to('#heroTagline', { opacity: 1, duration: 1.2, ease: 'power2.out' }, '-=0.5')
-  .to('#scrollHint', { opacity: 1, duration: 1, ease: 'power2.out' }, '-=0.5');
-
-/* ══════════════════════════════════════════
-   WORD SPLITTER
-══════════════════════════════════════════ */
-function splitWords(el, text) {
+/* ── WORD SPLITTER ── */
+function splitWords(el, text){
   const words = text.trim().split(/\s+/);
   el.innerHTML = '';
-  words.forEach((word, i) => {
-    const mask = document.createElement('span'); mask.className = 'word-mask';
-    const inner = document.createElement('span'); inner.className = 'word-inner';
-    inner.textContent = word;
-    mask.appendChild(inner); el.appendChild(mask);
-    if (i < words.length - 1) el.appendChild(document.createTextNode(' '));
+  words.forEach((w,i)=>{
+    const mask=document.createElement('span'); mask.className='wm';
+    const inner=document.createElement('span'); inner.className='wi';
+    inner.textContent=w; mask.appendChild(inner); el.appendChild(mask);
+    if(i<words.length-1) el.appendChild(document.createTextNode(' '));
   });
-  return el.querySelectorAll('.word-inner');
+  return el.querySelectorAll('.wi');
 }
 
-/* ══════════════════════════════════════════
-   SECTION HEADER ANIMATION HELPER
-══════════════════════════════════════════ */
-function animateHeader(lineId, titleId, labelId, trigger) {
-  ScrollTrigger.create({
-    trigger,
-    start: 'top 72%',
-    onEnter: () => {
-      gsap.to(lineId, { scaleX: 1, duration: 1.1, ease: 'power3.out' });
-      gsap.to(titleId, {
-        scale: 1, filter: 'blur(0px)', opacity: 1,
-        duration: 1.5, ease: 'power3.out', delay: 0.15
-      });
-      if (labelId) gsap.to(labelId, { opacity: 1, x: 0, duration: 1, ease: 'power3.out', delay: 0.4 });
-    }
-  });
-}
-
-/* ══════════════════════════════════════════
-   ABOUT
-══════════════════════════════════════════ */
-animateHeader('#aboutLine', '#aboutTitle', '#aboutLabelSmall', '#about');
-
-// Parallax background
-gsap.to('#aboutParallaxBg', {
-  yPercent: 20,
-  scrollTrigger: {
-    trigger: '#about', start: 'top bottom', end: 'bottom top', scrub: true
-  }
-});
-
-// Parallax number
-gsap.to('#aboutParallaxNum', {
-  yPercent: -22,
-  scrollTrigger: {
-    trigger: '#about', start: 'top bottom', end: 'bottom top', scrub: true
-  }
-});
-
-// Word-by-word text reveal
+/* ── ABOUT: pinned scrub word-reveal ── */
 const aboutRaw = 'Founded by composer Sami Yusuf, Fons Sophiae Collective brings together master musicians from eight nations — China, Spain, France, Germany, the United Kingdom, Morocco, Azerbaijan, and Türkiye — in a union of ancient traditions.';
 const aboutWords = splitWords(document.getElementById('aboutText'), aboutRaw);
+const N = aboutWords.length;
+
+const aboutTL = gsap.timeline();
+aboutTL
+  // header elements at the start
+  .to('#aboutGL',  { scaleX:1,  duration:.3, ease:'power3.out' }, 0)
+  .to('#aboutST',  { scale:1, filter:'blur(0px)', opacity:1, duration:.45, ease:'power3.out' }, .06)
+  .to('#aboutSL',  { opacity:1, x:0, duration:.3, ease:'power3.out' }, .16)
+  // big number parallaxes throughout at its own rate
+  .to('#aboutNum', { yPercent:-44, duration:1 }, 0)
+  .to('#aboutGlow',{ x:'6%', duration:1 }, 0);
+
+// words stagger in — placed at timeline position 0.2→0.88
+aboutWords.forEach((word, i) => {
+  aboutTL.to(word, { y:'0%', opacity:1, duration:.2, ease:'power2.out' },
+    0.2 + (i / N) * 0.68);
+});
+aboutTL.to('#aboutCap', { opacity:1, duration:.15 }, .93);
 
 ScrollTrigger.create({
-  trigger: '#about',
-  start: 'top 65%',
-  onEnter: () => {
-    gsap.to(aboutWords, {
-      y: '0%', duration: 0.9, ease: 'power3.out',
-      stagger: { each: 0.045, from: 'start' },
-      delay: 0.3,
-    });
-    gsap.to('#aboutCaption', { opacity: 1, y: 0, duration: 1, ease: 'power3.out', delay: 1.4 });
-  }
+  trigger:'#about', start:'top top', end:'+=260vh',
+  pin:true, scrub:2.4, animation:aboutTL,
+  anticipatePin:1,
 });
 
-/* ══════════════════════════════════════════
-   ENSEMBLE — pinned horizontal scroll
-══════════════════════════════════════════ */
-const ensembleInner = document.getElementById('ensemble-inner');
-const ensembleTrack = document.getElementById('ensemble-track');
-const cards = gsap.utils.toArray('.instrument-card');
-const numCards = cards.length;
+/* ── ENSEMBLE: horizontal pin ── */
+const ensTrack = document.getElementById('ens-track');
+const cards = gsap.utils.toArray('.icard');
+const NC = cards.length;
 
-const horizontalTween = gsap.to(ensembleTrack, {
-  x: () => -(numCards - 1) * window.innerWidth,
-  ease: 'none',
-  paused: true,
+const hTween = gsap.to(ensTrack, {
+  x: ()=> -(NC-1)*innerWidth, ease:'none', paused:true,
 });
 
-const ensembleST = ScrollTrigger.create({
-  trigger: ensembleInner,
-  start: 'top top',
-  end: () => `+=${(numCards - 1) * window.innerWidth}`,
-  pin: true,
-  scrub: 1.8,
-  animation: horizontalTween,
-  snap: {
-    snapTo: 1 / (numCards - 1),
-    duration: { min: 0.3, max: 0.65 },
-    delay: 0.05,
-    ease: 'power2.inOut',
-  },
-  invalidateOnRefresh: true,
+ScrollTrigger.create({
+  trigger:'#ens-inner', start:'top top',
+  end: ()=> `+=${(NC-1)*innerWidth}`,
+  pin:true, scrub:1.8, animation:hTween,
+  snap:{ snapTo:1/(NC-1), duration:{min:.3,max:.6}, delay:.05, ease:'power2.inOut' },
+  invalidateOnRefresh:true,
 });
 
-// Per-card zoom + text slide in
-cards.forEach((card, i) => {
-  const bg = card.querySelector('.card-bg');
-  const num = card.querySelector('.card-num');
-  const name = card.querySelector('.card-name');
-  const origin = card.querySelector('.card-origin');
-
-  // Stagger in the text elements
+cards.forEach(card=>{
+  const bg   = card.querySelector('.cbg');
+  const cn   = card.querySelector('.cn');
+  const cname= card.querySelector('.cname');
+  const cori = card.querySelector('.cori');
   ScrollTrigger.create({
-    trigger: card,
-    containerAnimation: horizontalTween,
-    start: 'left 75%',
-    onEnter: () => {
-      gsap.to(bg, { scale: 1.04, duration: 2.8, ease: 'power1.out' });
-      gsap.to([num, name, origin], {
-        x: 0, opacity: 1,
-        stagger: 0.14,
-        duration: 1.2,
-        ease: 'power3.out',
-        delay: 0.1,
-      });
+    trigger:card, containerAnimation:hTween, start:'left 72%',
+    onEnter:()=>{
+      gsap.to(bg,    { scale:1.03, duration:2.8, ease:'power1.out' });
+      gsap.to([cn,cname,cori], { x:0, opacity:1, stagger:.13, duration:1.2, ease:'power3.out', delay:.1 });
     },
-    onLeaveBack: () => {
-      gsap.to(bg, { scale: 1.12, duration: 1.2, ease: 'power2.in' });
-      gsap.to([num, name, origin], { x: -60, opacity: 0, duration: 0.5, stagger: 0.07 });
+    onLeaveBack:()=>{
+      gsap.to(bg, { scale:1.12, duration:1.1 });
+      gsap.to([cn,cname,cori], { x:-65, opacity:0, duration:.45, stagger:.06 });
     },
   });
 });
 
-/* ══════════════════════════════════════════
-   CONCERTS
-══════════════════════════════════════════ */
-animateHeader('#concertsLine', '#concertsTitle', '#concertsLabelSmall', '#concerts');
-
-gsap.to('#concertsParallaxNum', {
-  yPercent: -20,
-  scrollTrigger: {
-    trigger: '#concerts', start: 'top bottom', end: 'bottom top', scrub: true
+/* ── CONCERTS: header + scrubbed clip wipes ── */
+// header via onEnter (fires once)
+ScrollTrigger.create({
+  trigger:'#concerts', start:'top 68%',
+  onEnter:()=>{
+    gsap.to('#concGL', { scaleX:1, duration:1.1, ease:'power3.out' });
+    gsap.to('#concST', { scale:1, filter:'blur(0px)', opacity:1, duration:1.5, ease:'power3.out', delay:.15 });
+    gsap.to('#concSL', { opacity:1, x:0, duration:1, ease:'power3.out', delay:.4 });
   }
 });
 
-const concertRows = gsap.utils.toArray('.concert-row');
-concertRows.forEach((row, i) => {
-  const venue  = row.querySelector('.concert-venue');
-  const date   = row.querySelector('.concert-date');
-  const city   = row.querySelector('.concert-city');
-  const tag    = row.querySelector('.concert-tag');
-  const line   = row.querySelector('.concert-grow-line');
+// big number parallax
+gsap.to('#concertsNum',{
+  yPercent:-28,
+  scrollTrigger:{ trigger:'#concerts', start:'top bottom', end:'bottom top', scrub:true }
+});
 
-  ScrollTrigger.create({
-    trigger: row,
-    start: 'top 88%',
-    onEnter: () => {
-      const tl = gsap.timeline({ delay: i * 0.1 });
-      tl.to(row,   { x: 0, opacity: 1, duration: 0.9, ease: 'power3.out' })
-        .to(venue,  { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }, '-=0.55')
-        .to(date,   { y: 0, opacity: 1, duration: 0.45, ease: 'power2.out' }, '-=0.35')
-        .to(city,   { y: 0, opacity: 1, duration: 0.45, ease: 'power2.out' }, '-=0.3')
-        .to(tag,    { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out' }, '-=0.25')
-        .to(line,   { scaleX: 1, duration: 1, ease: 'power3.out' }, '-=0.4');
-    }
+// each row: clip-path wipe scrubbed to scroll, then underline grows
+gsap.utils.toArray('.crow').forEach((row, i)=>{
+  const line = row.querySelector('.cbl');
+  gsap.to(row,{
+    clipPath:'inset(0 0% 0 0)', ease:'power1.out',
+    scrollTrigger:{ trigger:row, start:'top 90%', end:'top 42%', scrub:1.1 }
+  });
+  gsap.to(line,{
+    scaleX:1, ease:'power2.out',
+    scrollTrigger:{ trigger:row, start:'top 48%', end:'top 18%', scrub:1 }
   });
 });
 
-/* ══════════════════════════════════════════
-   CONTACT
-══════════════════════════════════════════ */
-ScrollTrigger.create({
-  trigger: '#contact',
-  start: 'top 72%',
-  onEnter: () => {
-    gsap.to('#contactEyebrow', { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' });
-    gsap.to('#contactEmail',   { opacity: 1, y: 0, duration: 1.1, ease: 'power3.out', delay: 0.2 });
-    gsap.to('#contactRule',    { opacity: 0.6, duration: 1.4, ease: 'power2.out', delay: 0.6 });
-  }
+/* ── CONTACT: scrubbed reveal ── */
+[
+  ['#contEye',  { opacity:1, y:0 }, 'top 80%', 'top 50%'],
+  ['#contEmail',{ opacity:1, y:0 }, 'top 72%', 'top 38%'],
+  ['#contRule', { opacity:.6 },     'top 60%', 'top 28%'],
+].forEach(([sel, props, start, end])=>{
+  gsap.to(sel, { ...props, ease:'power2.out',
+    scrollTrigger:{ trigger:'#contact', start, end, scrub:1.5 }});
 });
 
-/* ══════════════════════════════════════════
-   NAV dim on scroll down
-══════════════════════════════════════════ */
+/* ── CINEMATIC FLASH between sections ── */
+const ovl = document.getElementById('overlay');
+let flashBusy = false;
+function flash(){
+  if(flashBusy) return; flashBusy=true;
+  gsap.timeline({onComplete:()=>{ flashBusy=false; }})
+    .to(ovl,{opacity:1, duration:.45, ease:'power2.in'})
+    .to(ovl,{opacity:0, duration:.75, ease:'power2.out', delay:.05});
+}
+['#ensemble','#concerts','#contact'].forEach(id=>{
+  const el = document.querySelector(id); if(!el) return;
+  ScrollTrigger.create({ trigger:el, start:'top 22%',
+    onEnter:()=>flash(), onEnterBack:()=>flash() });
+});
+
+/* ── NAV dim on scroll down ── */
 let lastY = 0;
-lenis.on('scroll', ({ scroll }) => {
-  const nav = document.getElementById('nav');
-  nav.style.opacity = (scroll > 80 && scroll > lastY) ? '0.6' : '1';
+lenis.on('scroll',({ scroll })=>{
+  document.getElementById('nav').style.opacity = (scroll>80&&scroll>lastY)?'.5':'1';
   lastY = scroll;
 });
 
-/* ══════════════════════════════════════════
-   SMOOTH ANCHOR LINKS
-══════════════════════════════════════════ */
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEventListener('click', e => {
+/* ── ANCHOR LINKS ── */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
     e.preventDefault();
-    const target = document.querySelector(a.getAttribute('href'));
-    if (target) lenis.scrollTo(target, { offset: -60, duration: 2.2 });
+    const t = document.querySelector(a.getAttribute('href'));
+    if(t) lenis.scrollTo(t,{ offset:-60, duration:2.5 });
   });
 });
-
-/* ══════════════════════════════════════════
-   RESIZE
-══════════════════════════════════════════ */
-window.addEventListener('resize', () => ScrollTrigger.refresh());
 </script>
 </body>
 </html>
