@@ -1,1005 +1,871 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fons Sophiae Collective</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
-<style>
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Fons Sophiae Collective</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@200;300;400;500&display=swap" rel="stylesheet">
 
-:root {
-  --bg:       #0a0805;
-  --cream:    #f5e6c8;
-  --gold:     #c9a84c;
-  --gold-mid: #8a7a5a;
-  --gold-dim: rgba(201,168,76,0.08);
-}
+    <style>
+        :root {
+            --cream: #F5F0E8;
+            --charcoal: #1A1A1A;
+            --warm-gray: #8A8279;
+            --accent: #C9A96E;
+        }
 
-html { scroll-behavior: auto; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-body {
-  background: var(--bg);
-  color: var(--cream);
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  overflow-x: hidden;
-  cursor: none;
-}
+        html {
+            scroll-behavior: smooth;
+        }
 
-/* ── TRANSITION OVERLAY ── */
-#transition-overlay {
-  position: fixed;
-  inset: 0;
-  background: #000;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 900;
-}
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--charcoal);
+            color: var(--cream);
+            overflow-x: hidden;
+            cursor: none;
+        }
 
-/* ── CURSOR ── */
-.cursor {
-  position: fixed; width: 7px; height: 7px;
-  background: var(--gold); border-radius: 50%;
-  pointer-events: none; z-index: 9999;
-  transform: translate(-50%,-50%);
-  mix-blend-mode: screen;
-}
-.cursor-ring {
-  position: fixed; width: 38px; height: 38px;
-  border: 1px solid rgba(201,168,76,0.45);
-  border-radius: 50%; pointer-events: none; z-index: 9998;
-  transform: translate(-50%,-50%);
-  transition: width .3s, height .3s, border-color .3s;
-}
+        .font-serif {
+            font-family: 'Cormorant Garamond', serif;
+        }
 
-/* ── NAV ── */
-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  padding: 28px 60px;
-  display: flex; justify-content: space-between; align-items: center;
-  transition: opacity .5s;
-}
-nav::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(to bottom, rgba(10,8,5,.95) 0%, transparent 100%);
-  pointer-events: none;
-}
-.nav-logo {
-  font-size: .7rem; letter-spacing: .4em; color: var(--gold);
-  text-transform: uppercase; font-weight: 400; position: relative;
-}
-.nav-links { display: flex; gap: 48px; list-style: none; position: relative; }
-.nav-links a {
-  font-size: .65rem; letter-spacing: .3em; color: var(--gold-mid);
-  text-decoration: none; text-transform: uppercase; transition: color .4s;
-}
-.nav-links a:hover { color: var(--cream); }
+        /* Custom Cursor */
+        .cursor-dot,
+        .cursor-outline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        }
 
-/* ══════════════════════════════════════════
-   HERO
-══════════════════════════════════════════ */
-#hero {
-  position: relative; width: 100vw; height: 100vh;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  overflow: hidden;
-}
-#hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-#hero-glow {
-  position: absolute; width: 800px; height: 800px;
-  left: 50%; top: 50%; transform: translate(-50%,-50%);
-  background: radial-gradient(circle, rgba(201,168,76,.09) 0%, transparent 65%);
-  pointer-events: none; border-radius: 50%;
-}
-.hero-inner {
-  position: relative; z-index: 2;
-  text-align: center; padding: 0 40px;
-}
-.hero-eyebrow {
-  font-size: .62rem; letter-spacing: .55em; color: var(--gold);
-  text-transform: uppercase; margin-bottom: 32px; opacity: 0;
-}
-.hero-title {
-  font-size: clamp(2.6rem, 5.8vw, 6.2rem);
-  font-weight: 300; line-height: 1.05;
-  letter-spacing: .13em; color: var(--cream);
-  text-transform: uppercase;
-}
-.letter-wrap { display: inline-block; overflow: hidden; vertical-align: bottom; }
-.letter { display: inline-block; transform: translateY(110%); }
-.word-space { display: inline-block; width: .42em; }
+        .cursor-dot {
+            width: 5px;
+            height: 5px;
+            background-color: var(--accent);
+        }
 
-.hero-tagline {
-  margin-top: 36px;
-  font-size: clamp(.95rem, 1.5vw, 1.3rem);
-  font-style: italic; font-weight: 300;
-  letter-spacing: .08em; color: var(--gold-mid); opacity: 0;
-}
-.hero-scroll-hint {
-  position: absolute; bottom: 48px; left: 50%; transform: translateX(-50%);
-  z-index: 2; display: flex; flex-direction: column; align-items: center;
-  gap: 10px; opacity: 0;
-}
-.hero-scroll-hint span {
-  font-size: .55rem; letter-spacing: .45em; color: var(--gold-mid); text-transform: uppercase;
-}
-.scroll-line {
-  width: 1px; height: 56px;
-  background: linear-gradient(to bottom, var(--gold), transparent);
-}
+        .cursor-outline {
+            width: 30px;
+            height: 30px;
+            border: 1px solid rgba(201, 169, 110, 0.5);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
 
-/* ══════════════════════════════════════════
-   WORD SPLIT
-══════════════════════════════════════════ */
-.word-mask {
-  display: inline-block; overflow: hidden;
-  vertical-align: bottom; padding-bottom: .06em;
-}
-.word-inner { display: inline-block; transform: translateY(115%); }
+        .cursor-outline.hover {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(201, 169, 110, 0.1);
+            border-color: var(--accent);
+        }
 
-/* ══════════════════════════════════════════
-   SECTION COMMONS
-══════════════════════════════════════════ */
-.container { max-width: 1120px; margin: 0 auto; padding: 0 60px; }
+        /* Grain Overlay */
+        .grain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9000;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
 
-.section-header {
-  display: flex; align-items: center; gap: 28px;
-  margin-bottom: 72px; overflow: hidden;
-}
-.grow-line {
-  height: 1px; width: 80px; flex-shrink: 0;
-  background: var(--gold); transform: scaleX(0); transform-origin: left; opacity: .5;
-}
-.section-title {
-  font-size: clamp(1.8rem, 3vw, 2.8rem);
-  font-weight: 300; letter-spacing: .18em;
-  text-transform: uppercase; color: var(--cream);
-  opacity: 0; transform: scale(1.6); filter: blur(16px);
-  transform-origin: left center;
-}
-.section-label-small {
-  font-size: .58rem; letter-spacing: .5em; color: var(--gold);
-  text-transform: uppercase; margin-left: auto; flex-shrink: 0;
-  opacity: 0; transform: translateX(20px);
-}
-.section-parallax-num {
-  position: absolute; font-size: 28vw; font-weight: 300; line-height: 1;
-  color: rgba(201,168,76,.035); pointer-events: none; will-change: transform;
-  right: -2vw; top: -4vw; z-index: 0; user-select: none;
-}
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-/* ══════════════════════════════════════════
-   ABOUT
-══════════════════════════════════════════ */
-#about {
-  position: relative; padding: 160px 0; overflow: hidden;
-}
-.about-parallax-bg {
-  position: absolute; inset: -30%; pointer-events: none;
-  background:
-    radial-gradient(ellipse at 20% 50%, rgba(201,168,76,.025) 0%, transparent 55%),
-    radial-gradient(ellipse at 80% 50%, rgba(201,168,76,.015) 0%, transparent 55%);
-  will-change: transform;
-}
-#aboutText {
-  font-size: clamp(1.4rem, 2.5vw, 2.4rem);
-  font-weight: 300; line-height: 1.7;
-  letter-spacing: .01em; color: var(--cream);
-  position: relative; z-index: 1;
-}
-.about-caption {
-  margin-top: 64px; font-size: .72rem; letter-spacing: .35em;
-  color: var(--gold-mid); text-transform: uppercase;
-  opacity: 0; transform: translateY(20px); position: relative; z-index: 1;
-}
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0d0d0d 100%);
+        }
 
-/* ══════════════════════════════════════════
-   ENSEMBLE — horizontal pin
-══════════════════════════════════════════ */
-#ensemble { position: relative; }
-#ensemble-inner {
-  width: 100vw; height: 100vh; overflow: hidden; position: relative;
-}
-#ensemble-track {
-  display: flex; width: calc(7 * 100vw); height: 100vh;
-  will-change: transform;
-}
-.instrument-card {
-  width: 100vw; height: 100vh;
-  flex-shrink: 0; position: relative;
-  background-color: #12100d;
-  overflow: hidden;
-  display: flex; align-items: flex-end;
-}
-.card-bg {
-  position: absolute; inset: 0;
-  background-size: cover; background-position: center;
-  transform: scale(1.12); will-change: transform;
-  transition: none;
-}
-.card-overlay {
-  position: absolute; inset: 0;
-  background:
-    linear-gradient(to right, rgba(10,8,5,.92) 0%, rgba(10,8,5,.5) 50%, rgba(10,8,5,.2) 100%),
-    linear-gradient(to top, rgba(10,8,5,.8) 0%, transparent 60%);
-}
-.card-content {
-  position: relative; z-index: 2;
-  padding: 0 8% 10%;
-}
-.card-num {
-  display: block; font-size: .6rem; letter-spacing: .5em;
-  color: var(--gold); text-transform: uppercase; margin-bottom: 24px;
-  opacity: 0; transform: translateX(-50px);
-}
-.card-name {
-  display: block;
-  font-size: clamp(3.5rem, 8vw, 8rem);
-  font-weight: 300; letter-spacing: .08em;
-  color: var(--cream); line-height: 1;
-  opacity: 0; transform: translateX(-70px);
-}
-.card-origin {
-  display: block; margin-top: 20px;
-  font-size: clamp(.75rem, 1.1vw, 1rem);
-  letter-spacing: .3em; color: var(--gold-mid);
-  text-transform: uppercase;
-  opacity: 0; transform: translateX(-40px);
-}
-.card-progress {
-  position: absolute; bottom: 40px; right: 60px;
-  font-size: .6rem; letter-spacing: .4em; color: rgba(201,168,76,.4);
-  text-transform: uppercase; z-index: 2;
-}
+        .hero-visual {
+            position: absolute;
+            inset: 0;
+            opacity: 0.4;
+            background-image:
+                radial-gradient(circle at 20% 50%, rgba(201, 169, 110, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(201, 169, 110, 0.1) 0%, transparent 50%);
+        }
 
-/* Ensemble label overlay */
-.ensemble-section-label {
-  position: absolute; top: 40px; left: 60px; z-index: 3;
-  display: flex; align-items: center; gap: 20px;
-}
-.ensemble-section-label span {
-  font-size: .6rem; letter-spacing: .5em; color: var(--gold);
-  text-transform: uppercase;
-}
-.ensemble-section-label::after {
-  content: ''; width: 60px; height: 1px; background: var(--gold); opacity: .4;
-  display: block;
-}
+        /* Floating Notes Animation */
+        .floating-note {
+            position: absolute;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            color: rgba(201, 169, 110, 0.2);
+            animation: float 20s infinite ease-in-out;
+            pointer-events: none;
+        }
 
-/* ══════════════════════════════════════════
-   CONCERTS
-══════════════════════════════════════════ */
-#concerts { position: relative; padding: 160px 0; overflow: hidden; }
-.concert-row {
-  position: relative; padding: 40px 0;
-  opacity: 0; transform: translateX(-70px);
-}
-.concert-grow-line {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(to right, rgba(201,168,76,.4), rgba(201,168,76,.1));
-  transform: scaleX(0); transform-origin: left;
-}
-.concert-row:last-child .concert-grow-line { opacity: 0; }
-.concert-row-inner {
-  display: grid;
-  grid-template-columns: 160px 1fr 1fr auto;
-  align-items: center; gap: 24px;
-}
-.concert-date {
-  font-size: .68rem; letter-spacing: .22em; color: var(--gold);
-  text-transform: uppercase; opacity: 0; transform: translateY(10px);
-}
-.concert-venue {
-  font-size: clamp(1.1rem, 1.8vw, 1.55rem);
-  font-weight: 300; letter-spacing: .04em; color: var(--cream);
-  opacity: 0; transform: translateY(12px);
-}
-.concert-city {
-  font-size: .68rem; letter-spacing: .28em; color: var(--gold-mid);
-  text-transform: uppercase; opacity: 0; transform: translateY(10px);
-}
-.concert-tag {
-  font-size: .55rem; letter-spacing: .25em; color: var(--bg);
-  background: var(--gold); padding: 7px 14px;
-  text-transform: uppercase; opacity: 0; transform: translateY(10px);
-}
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(30px, -50px) rotate(5deg); }
+            50% { transform: translate(-20px, -100px) rotate(-3deg); }
+            75% { transform: translate(40px, -30px) rotate(2deg); }
+        }
 
-/* ══════════════════════════════════════════
-   CONTACT
-══════════════════════════════════════════ */
-#contact { padding: 160px 0 120px; text-align: center; overflow: hidden; }
-.contact-eyebrow {
-  font-size: .6rem; letter-spacing: .55em; color: var(--gold);
-  text-transform: uppercase; margin-bottom: 56px;
-  opacity: 0; transform: translateY(24px);
-}
-.contact-email {
-  font-size: clamp(1.3rem, 2.8vw, 2.8rem);
-  font-weight: 300; letter-spacing: .06em; color: var(--cream);
-  text-decoration: none; display: inline-block; position: relative;
-  opacity: 0; transform: translateY(36px);
-}
-.contact-email::after {
-  content: ''; position: absolute; bottom: -6px; left: 0; right: 0;
-  height: 1px; background: var(--gold);
-  transform: scaleX(0); transform-origin: left;
-  transition: transform .7s cubic-bezier(.16,1,.3,1);
-}
-.contact-email:hover::after { transform: scaleX(1); }
-.contact-rule {
-  width: 200px; height: 1px;
-  background: linear-gradient(to right, transparent, var(--gold), transparent);
-  margin: 80px auto 0; opacity: 0;
-}
+        /* Text Reveal */
+        .reveal-text {
+            overflow: hidden;
+        }
 
-/* ══════════════════════════════════════════
-   FOOTER
-══════════════════════════════════════════ */
-footer {
-  padding: 44px 60px;
-  display: flex; justify-content: space-between; align-items: center;
-  border-top: 1px solid rgba(201,168,76,.07);
-}
-.footer-copy, .footer-mark {
-  font-size: .58rem; letter-spacing: .3em; text-transform: uppercase;
-}
-.footer-copy { color: var(--gold-mid); }
-.footer-mark { color: rgba(138,122,90,.3); }
+        .reveal-text span {
+            display: inline-block;
+            transform: translateY(100%);
+        }
 
-/* ── MOBILE ── */
-@media (max-width: 768px) {
-  nav { padding: 22px 24px; }
-  .nav-links { display: none; }
-  .container { padding: 0 24px; }
-  #about, #concerts, #contact { padding: 100px 0; }
-  .concert-row-inner { grid-template-columns: 1fr 1fr; }
-  .concert-tag { display: none; }
-  footer { flex-direction: column; gap: 14px; text-align: center; }
-  .section-parallax-num { font-size: 45vw; }
-}
-</style>
+        /* Scroll Indicator */
+        .scroll-hint {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            opacity: 0.6;
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, var(--accent), transparent);
+            animation: scrollPulse 2s infinite;
+        }
+
+        @keyframes scrollPulse {
+            0%, 100% { transform: scaleY(1); opacity: 1; }
+            50% { transform: scaleY(0.5); opacity: 0.3; }
+        }
+
+        /* Marquee */
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .marquee-content {
+            display: inline-flex;
+            animation: marquee 30s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Image Cards */
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .gallery-item img {
+            transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.6s;
+            filter: grayscale(100%) brightness(0.7);
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+            filter: grayscale(0%) brightness(0.9);
+        }
+
+        .gallery-item::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .gallery-item:hover::after {
+            opacity: 1;
+        }
+
+        .gallery-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 2rem;
+            z-index: 2;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .gallery-item:hover .gallery-caption {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Section Headers */
+        .section-label {
+            font-size: 0.75rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 2rem;
+        }
+
+        /* Horizontal Scroll Section */
+        .horizontal-section {
+            overflow: hidden;
+        }
+
+        .horizontal-wrapper {
+            display: flex;
+            width: fit-content;
+        }
+
+        /* Audio Visualizer Bars */
+        .viz-bar {
+            width: 3px;
+            background: var(--accent);
+            border-radius: 2px;
+            animation: vizDance 1.2s ease-in-out infinite;
+        }
+
+        @keyframes vizDance {
+            0%, 100% { height: 20%; }
+            50% { height: 100%; }
+        }
+
+        /* Smooth Link Underline */
+        .link-underline {
+            position: relative;
+            display: inline-block;
+        }
+
+        .link-underline::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1px;
+            bottom: -2px;
+            left: 0;
+            background-color: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .link-underline:hover::after {
+            width: 100%;
+        }
+
+        /* Navigation */
+        .nav-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            mix-blend-mode: difference;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.4s;
+        }
+
+        .nav-fixed.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            body { cursor: auto; }
+            .cursor-dot, .cursor-outline { display: none; }
+        }
+
+        /* Parallax layers */
+        .parallax-slow { will-change: transform; }
+        .parallax-fast { will-change: transform; }
+
+        /* Text stroke effect */
+        .text-stroke {
+            -webkit-text-stroke: 1px rgba(245, 240, 232, 0.2);
+            color: transparent;
+        }
+    </style>
 </head>
 <body>
 
-<!-- Cinematic transition overlay -->
-<div id="transition-overlay"></div>
+    <!-- Custom Cursor -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
 
-<!-- Cursor -->
-<div class="cursor" id="cursor"></div>
-<div class="cursor-ring" id="cursorRing"></div>
+    <!-- Grain Overlay -->
+    <div class="grain"></div>
 
-<!-- Nav -->
-<nav id="nav">
-  <div class="nav-logo">FSC</div>
-  <ul class="nav-links">
-    <li><a href="#about">About</a></li>
-    <li><a href="#ensemble">Ensemble</a></li>
-    <li><a href="#concerts">Concerts</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ul>
-</nav>
+    <!-- Navigation -->
+    <nav class="nav-fixed" id="mainNav">
+        <div class="text-xs tracking-[0.3em] uppercase font-light">Fons Sophiae</div>
+        <div class="flex gap-8 text-xs tracking-widest uppercase">
+            <a href="#about" class="link-underline hover-trigger">About</a>
+            <a href="#ensemble" class="link-underline hover-trigger">Ensemble</a>
+            <a href="#concerts" class="link-underline hover-trigger">Concerts</a>
+            <a href="#contact" class="link-underline hover-trigger">Contact</a>
+        </div>
+    </nav>
 
-<!-- ══════════════════════════════════════════
-     HERO
-══════════════════════════════════════════ -->
-<section id="hero">
-  <canvas id="hero-canvas"></canvas>
-  <div id="hero-glow"></div>
-  <div class="hero-inner">
-    <p class="hero-eyebrow" id="heroEyebrow">Est. 2024 &nbsp;·&nbsp; World Music</p>
-    <h1 class="hero-title" id="heroTitle"></h1>
-    <p class="hero-tagline" id="heroTagline">Where the Silk Road Sings.</p>
-  </div>
-  <div class="hero-scroll-hint" id="scrollHint">
-    <span>Scroll</span>
-    <div class="scroll-line" id="scrollLine"></div>
-  </div>
-</section>
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-visual"></div>
 
-<!-- ══════════════════════════════════════════
-     ABOUT
-══════════════════════════════════════════ -->
-<section id="about">
-  <div class="about-parallax-bg" id="aboutParallaxBg"></div>
-  <div class="section-parallax-num" id="aboutParallaxNum">01</div>
-  <div class="container">
-    <div class="section-header">
-      <div class="grow-line" id="aboutLine"></div>
-      <h2 class="section-title" id="aboutTitle">About</h2>
-      <span class="section-label-small" id="aboutLabelSmall">Fons Sophiae</span>
+        <!-- Floating Musical Elements -->
+        <div class="floating-note" style="top: 15%; left: 10%; animation-delay: 0s;">𝄞</div>
+        <div class="floating-note" style="top: 60%; left: 85%; animation-delay: 5s;">𝄢</div>
+        <div class="floating-note" style="top: 30%; left: 75%; animation-delay: 10s;">𝄫</div>
+        <div class="floating-note" style="top: 75%; left: 20%; animation-delay: 15s;">𝄪</div>
+
+        <div class="relative z-10 text-center px-6 max-w-6xl mx-auto">
+            <div class="mb-6 overflow-hidden">
+                <p class="text-xs tracking-[0.5em] uppercase text-[#C9A96E] font-light opacity-0" id="heroLabel">
+                    Est. 2019 &mdash; Chamber Music Collective
+                </p>
+            </div>
+
+            <h1 class="font-serif text-6xl md:text-8xl lg:text-9xl font-light leading-[0.9] mb-8">
+                <div class="overflow-hidden">
+                    <span class="block reveal-text"><span id="line1">The Fons</span></span>
+                </div>
+                <div class="overflow-hidden">
+                    <span class="block reveal-text italic text-[#C9A96E]"><span id="line2">Sophiae</span></span>
+                </div>
+                <div class="overflow-hidden">
+                    <span class="block reveal-text"><span id="line3">Collective</span></span>
+                </div>
+            </h1>
+
+            <div class="mt-12 flex items-center justify-center gap-4 opacity-0" id="heroSub">
+                <div class="h-px w-12 bg-[#C9A96E]/50"></div>
+                <p class="text-sm tracking-[0.2em] uppercase text-[#8A8279] font-light">
+                    Where Tradition Meets Transcendence
+                </p>
+                <div class="h-px w-12 bg-[#C9A96E]/50"></div>
+            </div>
+        </div>
+
+        <div class="scroll-hint" id="scrollHint">
+            <span class="text-[10px] tracking-[0.3em] uppercase text-[#8A8279]">Scroll</span>
+            <div class="scroll-line"></div>
+        </div>
+    </section>
+
+    <!-- Marquee Divider -->
+    <div class="py-8 border-y border-[#F5F0E8]/10 bg-[#0f0f0f]">
+        <div class="marquee-container">
+            <div class="marquee-content font-serif text-4xl md:text-6xl text-[#F5F0E8]/5 italic">
+                <span class="mx-8">Fons Sophiae</span>
+                <span class="mx-8 text-[#C9A96E]/20">•</span>
+                <span class="mx-8">Collective</span>
+                <span class="mx-8 text-[#C9A96E]/20">•</span>
+                <span class="mx-8">Chamber Music</span>
+                <span class="mx-8 text-[#C9A96E]/20">•</span>
+                <span class="mx-8">Ensemble</span>
+                <span class="mx-8 text-[#C9A96E]/20">•</span>
+                <span class="mx-8">Fons Sophiae</span>
+                <span class="mx-8 text-[#C9A96E]/20">•</span>
+                <span class="mx-8">Collective</span>
+                <span class="mx-8 text-[#C9A96E]/20">•</span>
+                <span class="mx-8">Chamber Music</span>
+                <span class="mx-8 text-[#C9A96E]/20">•</span>
+                <span class="mx-8">Ensemble</span>
+                <span class="mx-8 text-[#C9A96E]/20">•</span>
+            </div>
+        </div>
     </div>
-    <div id="aboutText"></div>
-    <p class="about-caption" id="aboutCaption">Eight Nations &nbsp;·&nbsp; One Voice</p>
-  </div>
-</section>
 
-<!-- ══════════════════════════════════════════
-     ENSEMBLE — pinned horizontal scroll
-══════════════════════════════════════════ -->
-<section id="ensemble">
-  <div id="ensemble-inner">
-    <div class="ensemble-section-label">
-      <span>II &nbsp; The Ensemble</span>
-    </div>
-    <div id="ensemble-track">
+    <!-- About Section -->
+    <section id="about" class="min-h-screen py-32 px-6 relative">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div class="order-2 lg:order-1">
+                <p class="section-label reveal-on-scroll">About Us</p>
+                <h2 class="font-serif text-4xl md:text-6xl font-light leading-tight mb-8 reveal-on-scroll">
+                    Redefining <em class="text-[#C9A96E]">intimacy</em> in chamber music performance.
+                </h2>
+                <div class="space-y-6 text-[#8A8279] font-light leading-relaxed reveal-on-scroll">
+                    <p class="text-lg">
+                        Born from a shared devotion to the sacred wells of musical wisdom, The Fons Sophiae Collective brings together virtuosi from across the classical landscape. Our name — "Fons Sophiae," the Fountain of Wisdom — reflects our belief that music is an eternal spring of insight and emotional truth.
+                    </p>
+                    <p>
+                        Since our founding in 2019, we have sought to dissolve the barrier between performer and listener, creating spaces where every note resonates with purpose and every silence speaks as loudly as sound.
+                    </p>
+                </div>
 
-      <!-- 01 Ney -->
-      <div class="instrument-card">
-        <div class="card-bg" style="background-image:url('https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&w=1920&q=80')"></div>
-        <div class="card-overlay"></div>
-        <div class="card-content">
-          <span class="card-num">01 / 07</span>
-          <span class="card-name">Ney</span>
-          <span class="card-origin">Turkey &amp; Persia</span>
+                <div class="mt-12 flex items-center gap-6 reveal-on-scroll">
+                    <div class="flex gap-1 h-8 items-end" id="visualizer">
+                        <div class="viz-bar" style="animation-delay: 0s;"></div>
+                        <div class="viz-bar" style="animation-delay: 0.1s;"></div>
+                        <div class="viz-bar" style="animation-delay: 0.2s;"></div>
+                        <div class="viz-bar" style="animation-delay: 0.3s;"></div>
+                        <div class="viz-bar" style="animation-delay: 0.4s;"></div>
+                        <div class="viz-bar" style="animation-delay: 0.5s;"></div>
+                        <div class="viz-bar" style="animation-delay: 0.6s;"></div>
+                    </div>
+                    <span class="text-xs tracking-[0.2em] uppercase text-[#C9A96E]">Now Playing: Bach &mdash; Goldberg Variations</span>
+                </div>
+            </div>
+
+            <div class="order-1 lg:order-2 relative reveal-on-scroll">
+                <div class="aspect-[3/4] relative overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=800&q=80"
+                         alt="Violin close-up"
+                         class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000">
+                </div>
+                <div class="absolute -bottom-8 -left-8 w-48 h-48 border border-[#C9A96E]/30 -z-10"></div>
+                <div class="absolute -top-8 -right-8 w-32 h-32 bg-[#C9A96E]/5 -z-10"></div>
+            </div>
         </div>
-        <div class="card-progress">Scroll to explore</div>
-      </div>
+    </section>
 
-      <!-- 02 Oud -->
-      <div class="instrument-card">
-        <div class="card-bg" style="background-image:url('https://images.unsplash.com/photo-1574939571745-364bf21d1d95?auto=format&fit=crop&w=1920&q=80')"></div>
-        <div class="card-overlay"></div>
-        <div class="card-content">
-          <span class="card-num">02 / 07</span>
-          <span class="card-name">Oud</span>
-          <span class="card-origin">Morocco &amp; Middle East</span>
+    <!-- Ensemble Grid -->
+    <section id="ensemble" class="py-32 px-6">
+        <div class="max-w-7xl mx-auto mb-20">
+            <p class="section-label reveal-on-scroll">The Ensemble</p>
+            <h2 class="font-serif text-5xl md:text-7xl font-light reveal-on-scroll">
+                Our <em class="italic text-[#C9A96E]">Musicians</em>
+            </h2>
         </div>
-      </div>
 
-      <!-- 03 Balaban -->
-      <div class="instrument-card">
-        <div class="card-bg" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80')"></div>
-        <div class="card-overlay"></div>
-        <div class="card-content">
-          <span class="card-num">03 / 07</span>
-          <span class="card-name">Balaban</span>
-          <span class="card-origin">Azerbaijan</span>
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Member 1 -->
+            <div class="gallery-item aspect-[4/5] group reveal-on-scroll">
+                <img src="https://images.unsplash.com/photo-1465847899078-b413929f7120?w=600&q=80"
+                     alt="Violinist" class="w-full h-full object-cover">
+                <div class="gallery-caption">
+                    <p class="text-xs tracking-[0.3em] uppercase text-[#C9A96E] mb-2">First Violin</p>
+                    <h3 class="font-serif text-2xl">Isabelle Varga</h3>
+                </div>
+            </div>
+
+            <!-- Member 2 -->
+            <div class="gallery-item aspect-[4/5] group reveal-on-scroll lg:translate-y-12">
+                <img src="https://images.unsplash.com/photo-1519683109079-d5f539e1c42e?w=600&q=80"
+                     alt="Cellist" class="w-full h-full object-cover">
+                <div class="gallery-caption">
+                    <p class="text-xs tracking-[0.3em] uppercase text-[#C9A96E] mb-2">Cello</p>
+                    <h3 class="font-serif text-2xl">Marcus Chen</h3>
+                </div>
+            </div>
+
+            <!-- Member 3 -->
+            <div class="gallery-item aspect-[4/5] group reveal-on-scroll">
+                <img src="https://images.unsplash.com/photo-1573871669414-010dbf73ca84?w=600&q=80"
+                     alt="Pianist" class="w-full h-full object-cover">
+                <div class="gallery-caption">
+                    <p class="text-xs tracking-[0.3em] uppercase text-[#C9A96E] mb-2">Piano</p>
+                    <h3 class="font-serif text-2xl">Elena Rostova</h3>
+                </div>
+            </div>
+
+            <!-- Member 4 -->
+            <div class="gallery-item aspect-[4/5] group reveal-on-scroll lg:translate-y-12">
+                <img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=600&q=80"
+                     alt="Violist" class="w-full h-full object-cover">
+                <div class="gallery-caption">
+                    <p class="text-xs tracking-[0.3em] uppercase text-[#C9A96E] mb-2">Viola</p>
+                    <h3 class="font-serif text-2xl">James Whitfield</h3>
+                </div>
+            </div>
+
+            <!-- Member 5 -->
+            <div class="gallery-item aspect-[4/5] group reveal-on-scroll">
+                <img src="https://images.unsplash.com/photo-1514117445516-2ecfc9c4ec90?w=600&q=80"
+                     alt="Flutist" class="w-full h-full object-cover">
+                <div class="gallery-caption">
+                    <p class="text-xs tracking-[0.3em] uppercase text-[#C9A96E] mb-2">Flute</p>
+                    <h3 class="font-serif text-2xl">Sophia Laurent</h3>
+                </div>
+            </div>
+
+            <!-- Member 6 -->
+            <div class="gallery-item aspect-[4/5] group reveal-on-scroll lg:translate-y-12">
+                <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&q=80"
+                     alt="Clarinet" class="w-full h-full object-cover">
+                <div class="gallery-caption">
+                    <p class="text-xs tracking-[0.3em] uppercase text-[#C9A96E] mb-2">Clarinet</p>
+                    <h3 class="font-serif text-2xl">David Okafor</h3>
+                </div>
+            </div>
         </div>
-      </div>
+    </section>
 
-      <!-- 04 Bağlama -->
-      <div class="instrument-card">
-        <div class="card-bg" style="background-image:url('https://images.unsplash.com/photo-1519677100203-a0e668c92439?auto=format&fit=crop&w=1920&q=80')"></div>
-        <div class="card-overlay"></div>
-        <div class="card-content">
-          <span class="card-num">04 / 07</span>
-          <span class="card-name">Bağlama</span>
-          <span class="card-origin">Türkiye</span>
+    <!-- Quote Section -->
+    <section class="py-40 px-6 relative overflow-hidden">
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <span class="font-serif text-[20vw] text-[#F5F0E8]/[0.02] leading-none select-none">❝</span>
         </div>
-      </div>
-
-      <!-- 05 Kemane -->
-      <div class="instrument-card">
-        <div class="card-bg" style="background-image:url('https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&w=1920&q=80')"></div>
-        <div class="card-overlay"></div>
-        <div class="card-content">
-          <span class="card-num">05 / 07</span>
-          <span class="card-name">Kemane</span>
-          <span class="card-origin">Azerbaijan &amp; Iran</span>
+        <div class="max-w-4xl mx-auto text-center relative z-10">
+            <p class="font-serif text-3xl md:text-5xl font-light italic leading-relaxed mb-8 reveal-on-scroll text-[#F5F0E8]/90">
+                "Music is the divine way to tell beautiful, poetic things to the heart."
+            </p>
+            <div class="flex items-center justify-center gap-4 reveal-on-scroll">
+                <div class="h-px w-8 bg-[#C9A96E]/50"></div>
+                <p class="text-xs tracking-[0.3em] uppercase text-[#8A8279]">Pablo Casals</p>
+                <div class="h-px w-8 bg-[#C9A96E]/50"></div>
+            </div>
         </div>
-      </div>
+    </section>
 
-      <!-- 06 Erhu -->
-      <div class="instrument-card">
-        <div class="card-bg" style="background-image:url('https://images.unsplash.com/photo-1547891654-e66ed7ebb968?auto=format&fit=crop&w=1920&q=80')"></div>
-        <div class="card-overlay"></div>
-        <div class="card-content">
-          <span class="card-num">06 / 07</span>
-          <span class="card-name">Erhu</span>
-          <span class="card-origin">China</span>
+    <!-- Concerts / Horizontal Scroll -->
+    <section id="concerts" class="horizontal-section py-32 bg-[#0f0f0f]">
+        <div class="px-6 max-w-7xl mx-auto mb-16">
+            <p class="section-label reveal-on-scroll">Season 2025</p>
+            <h2 class="font-serif text-5xl md:text-7xl font-light reveal-on-scroll">
+                Upcoming <em class="italic text-[#C9A96E]">Performances</em>
+            </h2>
         </div>
-      </div>
 
-      <!-- 07 Flamenco Guitar -->
-      <div class="instrument-card">
-        <div class="card-bg" style="background-image:url('https://images.unsplash.com/photo-1511882150382-421056c89033?auto=format&fit=crop&w=1920&q=80')"></div>
-        <div class="card-overlay"></div>
-        <div class="card-content">
-          <span class="card-num">07 / 07</span>
-          <span class="card-name">Flamenco Guitar</span>
-          <span class="card-origin">Spain</span>
+        <div class="horizontal-wrapper px-6 gap-8" id="horizontalWrapper">
+            <!-- Concert 1 -->
+            <div class="flex-shrink-0 w-[400px] md:w-[500px] group cursor-pointer hover-trigger">
+                <div class="aspect-[16/10] overflow-hidden mb-6">
+                    <img src="https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&q=80"
+                         alt="Concert Hall" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                </div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-[#C9A96E] text-xs tracking-[0.3em] uppercase mb-2">Oct 15, 2025</p>
+                        <h3 class="font-serif text-2xl mb-2">Carnegie Hall</h3>
+                        <p class="text-[#8A8279] text-sm font-light">New York, NY</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full border border-[#C9A96E]/30 flex items-center justify-center group-hover:bg-[#C9A96E] group-hover:border-[#C9A96E] transition-all">
+                        <svg class="w-4 h-4 text-[#C9A96E] group-hover:text-[#1A1A1A] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Concert 2 -->
+            <div class="flex-shrink-0 w-[400px] md:w-[500px] group cursor-pointer hover-trigger">
+                <div class="aspect-[16/10] overflow-hidden mb-6">
+                    <img src="https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=800&q=80"
+                         alt="Royal Albert Hall" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                </div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-[#C9A96E] text-xs tracking-[0.3em] uppercase mb-2">Nov 03, 2025</p>
+                        <h3 class="font-serif text-2xl mb-2">Wigmore Hall</h3>
+                        <p class="text-[#8A8279] text-sm font-light">London, UK</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full border border-[#C9A96E]/30 flex items-center justify-center group-hover:bg-[#C9A96E] group-hover:border-[#C9A96E] transition-all">
+                        <svg class="w-4 h-4 text-[#C9A96E] group-hover:text-[#1A1A1A] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Concert 3 -->
+            <div class="flex-shrink-0 w-[400px] md:w-[500px] group cursor-pointer hover-trigger">
+                <div class="aspect-[16/10] overflow-hidden mb-6">
+                    <img src="https://images.unsplash.com/photo-1508854710579-5cecc3a9ff17?w=800&q=80"
+                         alt="Vienna" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                </div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-[#C9A96E] text-xs tracking-[0.3em] uppercase mb-2">Dec 12, 2025</p>
+                        <h3 class="font-serif text-2xl mb-2">Musikverein</h3>
+                        <p class="text-[#8A8279] text-sm font-light">Vienna, Austria</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full border border-[#C9A96E]/30 flex items-center justify-center group-hover:bg-[#C9A96E] group-hover:border-[#C9A96E] transition-all">
+                        <svg class="w-4 h-4 text-[#C9A96E] group-hover:text-[#1A1A1A] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Concert 4 -->
+            <div class="flex-shrink-0 w-[400px] md:w-[500px] group cursor-pointer hover-trigger">
+                <div class="aspect-[16/10] overflow-hidden mb-6">
+                    <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&q=80"
+                         alt="Concert" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                </div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-[#C9A96E] text-xs tracking-[0.3em] uppercase mb-2">Jan 20, 2026</p>
+                        <h3 class="font-serif text-2xl mb-2">Concertgebouw</h3>
+                        <p class="text-[#8A8279] text-sm font-light">Amsterdam, NL</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full border border-[#C9A96E]/30 flex items-center justify-center group-hover:bg-[#C9A96E] group-hover:border-[#C9A96E] transition-all">
+                        <svg class="w-4 h-4 text-[#C9A96E] group-hover:text-[#1A1A1A] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
+    </section>
 
-    </div><!-- /ensemble-track -->
-  </div><!-- /ensemble-inner -->
-</section>
-
-<!-- ══════════════════════════════════════════
-     CONCERTS
-══════════════════════════════════════════ -->
-<section id="concerts">
-  <div class="section-parallax-num" id="concertsParallaxNum">03</div>
-  <div class="container">
-    <div class="section-header">
-      <div class="grow-line" id="concertsLine"></div>
-      <h2 class="section-title" id="concertsTitle">Concerts</h2>
-      <span class="section-label-small" id="concertsLabelSmall">2025 Season</span>
-    </div>
-    <div class="concerts-list" id="concertsList">
-
-      <div class="concert-row">
-        <div class="concert-row-inner">
-          <span class="concert-date">Sep 12, 2025</span>
-          <span class="concert-venue">Barbican Centre</span>
-          <span class="concert-city">London, United Kingdom</span>
-          <span class="concert-tag">Premiere</span>
+    <!-- Contact / Footer -->
+    <section id="contact" class="min-h-screen flex flex-col justify-center py-32 px-6 relative">
+        <div class="absolute inset-0 opacity-5">
+            <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,_#C9A96E_0%,_transparent_70%)]"></div>
         </div>
-        <div class="concert-grow-line"></div>
-      </div>
 
-      <div class="concert-row">
-        <div class="concert-row-inner">
-          <span class="concert-date">Oct 04, 2025</span>
-          <span class="concert-venue">Philharmonie de Paris</span>
-          <span class="concert-city">Paris, France</span>
-          <span class="concert-tag">Sold Out</span>
+        <div class="max-w-5xl mx-auto text-center relative z-10">
+            <p class="section-label reveal-on-scroll mb-8">Get in Touch</p>
+            <h2 class="font-serif text-5xl md:text-8xl font-light mb-12 reveal-on-scroll">
+                Let's create <em class="italic text-[#C9A96E]">something<br>extraordinary</em> together.
+            </h2>
+
+            <a href="mailto:hello@fonssophiae.com" class="inline-block group hover-trigger">
+                <div class="border border-[#C9A96E]/30 px-12 py-5 rounded-full hover:bg-[#C9A96E] hover:border-[#C9A96E] transition-all duration-500">
+                    <span class="text-sm tracking-[0.3em] uppercase text-[#C9A96E] group-hover:text-[#1A1A1A] transition-colors font-medium">
+                        hello@fonssophiae.com
+                    </span>
+                </div>
+            </a>
+
+            <div class="mt-24 pt-12 border-t border-[#F5F0E8]/10 flex flex-col md:flex-row justify-between items-center gap-8">
+                <div class="text-xs tracking-[0.3em] uppercase text-[#8A8279]">
+                    © 2025 The Fons Sophiae Collective
+                </div>
+                <div class="flex gap-8 text-xs tracking-widest uppercase text-[#8A8279]">
+                    <a href="#" class="link-underline hover:text-[#F5F0E8] transition-colors hover-trigger">Instagram</a>
+                    <a href="#" class="link-underline hover:text-[#F5F0E8] transition-colors hover-trigger">YouTube</a>
+                    <a href="#" class="link-underline hover:text-[#F5F0E8] transition-colors hover-trigger">Spotify</a>
+                </div>
+            </div>
         </div>
-        <div class="concert-grow-line"></div>
-      </div>
+    </section>
 
-      <div class="concert-row">
-        <div class="concert-row-inner">
-          <span class="concert-date">Oct 19, 2025</span>
-          <span class="concert-venue">Konzerthaus Berlin</span>
-          <span class="concert-city">Berlin, Germany</span>
-          <span class="concert-tag">Available</span>
-        </div>
-        <div class="concert-grow-line"></div>
-      </div>
+    <script>
+        // Register GSAP plugins
+        gsap.registerPlugin(ScrollTrigger);
 
-      <div class="concert-row">
-        <div class="concert-row-inner">
-          <span class="concert-date">Nov 08, 2025</span>
-          <span class="concert-venue">Teatro Real</span>
-          <span class="concert-city">Madrid, Spain</span>
-          <span class="concert-tag">Available</span>
-        </div>
-        <div class="concert-grow-line"></div>
-      </div>
+        // Custom Cursor
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+        const hoverTriggers = document.querySelectorAll('.hover-trigger');
 
-      <div class="concert-row">
-        <div class="concert-row-inner">
-          <span class="concert-date">Nov 22, 2025</span>
-          <span class="concert-venue">Shanghai Concert Hall</span>
-          <span class="concert-city">Shanghai, China</span>
-          <span class="concert-tag">Available</span>
-        </div>
-        <div class="concert-grow-line"></div>
-      </div>
+        window.addEventListener('mousemove', (e) => {
+            const posX = e.clientX;
+            const posY = e.clientY;
 
-      <div class="concert-row">
-        <div class="concert-row-inner">
-          <span class="concert-date">Dec 06, 2025</span>
-          <span class="concert-venue">Cemal Reşit Rey Salonu</span>
-          <span class="concert-city">Istanbul, Türkiye</span>
-          <span class="concert-tag">Closing Night</span>
-        </div>
-        <div class="concert-grow-line"></div>
-      </div>
+            cursorDot.style.left = `${posX}px`;
+            cursorDot.style.top = `${posY}px`;
 
-    </div>
-  </div>
-</section>
+            cursorOutline.animate({
+                left: `${posX}px`,
+                top: `${posY}px`
+            }, { duration: 500, fill: "forwards" });
+        });
 
-<!-- ══════════════════════════════════════════
-     CONTACT
-══════════════════════════════════════════ -->
-<section id="contact">
-  <div class="container" style="display:flex;flex-direction:column;align-items:center;">
-    <p class="contact-eyebrow" id="contactEyebrow">IV &nbsp; Contact</p>
-    <a href="mailto:info@fonssophiae.com" class="contact-email" id="contactEmail">
-      info@fonssophiae.com
-    </a>
-    <div class="contact-rule" id="contactRule"></div>
-  </div>
-</section>
+        hoverTriggers.forEach(trigger => {
+            trigger.addEventListener('mouseenter', () => {
+                cursorOutline.classList.add('hover');
+            });
+            trigger.addEventListener('mouseleave', () => {
+                cursorOutline.classList.remove('hover');
+            });
+        });
 
-<footer>
-  <span class="footer-copy">© 2025 Fons Sophiae Collective. All rights reserved.</span>
-  <span class="footer-mark">Where the Silk Road Sings</span>
-</footer>
+        // Hero Animations
+        const heroTl = gsap.timeline({ delay: 0.3 });
 
-<!-- ══════════════════════════════════════════
-     SCRIPTS
-══════════════════════════════════════════ -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
-<script>
-/* ══════════════════════════════════════════
-   LENIS
-══════════════════════════════════════════ */
-const lenis = new Lenis({
-  duration: 1.6,
-  easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-  smoothTouch: false,
-});
-gsap.ticker.add(time => lenis.raf(time * 1000));
-gsap.ticker.lagSmoothing(0);
-gsap.registerPlugin(ScrollTrigger);
+        heroTl.to('#line1', {
+            y: 0,
+            duration: 1.2,
+            ease: 'power4.out'
+        })
+        .to('#line2', {
+            y: 0,
+            duration: 1.2,
+            ease: 'power4.out'
+        }, '-=0.9')
+        .to('#line3', {
+            y: 0,
+            duration: 1.2,
+            ease: 'power4.out'
+        }, '-=0.9')
+        .to('#heroLabel', {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: 'power2.out'
+        }, '-=0.6')
+        .to('#heroSub', {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: 'power2.out'
+        }, '-=0.4');
 
-/* ══════════════════════════════════════════
-   CURSOR
-══════════════════════════════════════════ */
-const cursor = document.getElementById('cursor');
-const cursorRing = document.getElementById('cursorRing');
-let mx = window.innerWidth / 2, my = window.innerHeight / 2;
-let rx = mx, ry = my;
-document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-(function animCursor() {
-  rx += (mx - rx) * 0.1;
-  ry += (my - ry) * 0.1;
-  cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
-  cursorRing.style.left = rx + 'px'; cursorRing.style.top = ry + 'px';
-  requestAnimationFrame(animCursor);
-})();
-document.querySelectorAll('a, .instrument-card, .concert-row').forEach(el => {
-  el.addEventListener('mouseenter', () => {
-    cursorRing.style.width = '60px'; cursorRing.style.height = '60px';
-    cursorRing.style.borderColor = 'rgba(201,168,76,.85)';
-  });
-  el.addEventListener('mouseleave', () => {
-    cursorRing.style.width = '38px'; cursorRing.style.height = '38px';
-    cursorRing.style.borderColor = 'rgba(201,168,76,.45)';
-  });
-});
+        // Scroll Hint Fade
+        gsap.to('#scrollHint', {
+            opacity: 0,
+            scrollTrigger: {
+                trigger: '#hero',
+                start: 'top top',
+                end: '20% top',
+                scrub: true
+            }
+        });
 
-/* ══════════════════════════════════════════
-   CINEMATIC TRANSITION FLASH
-══════════════════════════════════════════ */
-const overlay = document.getElementById('transition-overlay');
-let overlayActive = false;
-function flashSection() {
-  if (overlayActive) return;
-  overlayActive = true;
-  gsap.timeline({
-    onComplete: () => { overlayActive = false; }
-  })
-  .to(overlay, { opacity: 1, duration: 0.38, ease: 'power2.in' })
-  .to(overlay, { opacity: 0, duration: 0.65, ease: 'power2.out', delay: 0.05 });
-}
-['#about', '#ensemble', '#concerts', '#contact'].forEach(id => {
-  const el = document.querySelector(id);
-  if (!el) return;
-  ScrollTrigger.create({
-    trigger: el,
-    start: 'top 25%',
-    onEnter: () => flashSection(),
-    onEnterBack: () => flashSection(),
-  });
-});
+        // Navigation visibility
+        ScrollTrigger.create({
+            trigger: '#about',
+            start: 'top 80%',
+            onEnter: () => document.getElementById('mainNav').classList.add('visible'),
+            onLeaveBack: () => document.getElementById('mainNav').classList.remove('visible')
+        });
 
-/* ══════════════════════════════════════════
-   CANVAS PARTICLES (ember drift)
-══════════════════════════════════════════ */
-const canvas = document.getElementById('hero-canvas');
-const ctx = canvas.getContext('2d');
-let W, H;
-function resizeCanvas() {
-  W = canvas.width = window.innerWidth;
-  H = canvas.height = window.innerHeight;
-}
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
+        // Reveal on Scroll
+        const revealElements = document.querySelectorAll('.reveal-on-scroll');
+        revealElements.forEach((el, i) => {
+            gsap.fromTo(el,
+                {
+                    y: 60,
+                    opacity: 0
+                },
+                {
+                    y: 0,
+                    opacity: 1,
+                    duration: 1,
+                    ease: 'power3.out',
+                    scrollTrigger: {
+                        trigger: el,
+                        start: 'top 85%',
+                        toggleActions: 'play none none none'
+                    }
+                }
+            );
+        });
 
-class Ember {
-  constructor() { this.reset(true); }
-  reset(initial) {
-    this.x = Math.random() * W;
-    this.y = initial ? Math.random() * H : H + 8;
-    this.r = Math.random() * 1.6 + 0.2;
-    this.vy = -(Math.random() * 0.5 + 0.2);
-    this.vx = (Math.random() - 0.5) * 0.25;
-    this.life = 0;
-    this.maxLife = Math.random() * 280 + 180;
-    this.maxA = Math.random() * 0.55 + 0.1;
-    this.a = 0;
-    this.pulse = Math.random() * Math.PI * 2;
-    this.wobble = Math.random() * 0.02 - 0.01;
-  }
-  update() {
-    this.x += this.vx + Math.sin(this.life * 0.03) * 0.3;
-    this.y += this.vy;
-    this.life++;
-    this.pulse += 0.018;
-    const half = this.maxLife * 0.45;
-    if (this.life < half) this.a = (this.life / half) * this.maxA;
-    else this.a = ((this.maxLife - this.life) / (this.maxLife - half)) * this.maxA;
-    if (this.life >= this.maxLife || this.y < -10) this.reset(false);
-  }
-  draw() {
-    const flicker = 1 + Math.sin(this.pulse) * 0.2;
-    ctx.save();
-    ctx.globalAlpha = this.a * flicker;
-    ctx.fillStyle = '#c9a84c';
-    ctx.shadowColor = '#c9a84c';
-    ctx.shadowBlur = 4;
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-  }
-}
+        // Parallax for images
+        gsap.utils.toArray('.gallery-item img').forEach(img => {
+            gsap.to(img, {
+                yPercent: -10,
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: img.parentElement,
+                    start: 'top bottom',
+                    end: 'bottom top',
+                    scrub: true
+                }
+            });
+        });
 
-const embers = Array.from({ length: 180 }, () => new Ember());
-let heroMouseX = W / 2, heroMouseY = H / 2;
-document.addEventListener('mousemove', e => { heroMouseX = e.clientX; heroMouseY = e.clientY; });
+        // Horizontal Scroll for Concerts
+        const horizontalWrapper = document.getElementById('horizontalWrapper');
+        const horizontalSection = document.querySelector('.horizontal-section');
 
-function drawHero() {
-  ctx.clearRect(0, 0, W, H);
-  const vg = ctx.createRadialGradient(W/2, H/2, H*.05, W/2, H/2, H*.9);
-  vg.addColorStop(0, 'rgba(10,8,5,0)');
-  vg.addColorStop(1, 'rgba(10,8,5,.9)');
-  ctx.fillStyle = vg;
-  ctx.fillRect(0, 0, W, H);
-  const mg = ctx.createRadialGradient(heroMouseX, heroMouseY, 0, heroMouseX, heroMouseY, 300);
-  mg.addColorStop(0, 'rgba(201,168,76,.03)');
-  mg.addColorStop(1, 'rgba(201,168,76,0)');
-  ctx.fillStyle = mg;
-  ctx.fillRect(0, 0, W, H);
-  embers.forEach(e => { e.update(); e.draw(); });
-  requestAnimationFrame(drawHero);
-}
-drawHero();
+        if (window.innerWidth > 768) {
+            gsap.to(horizontalWrapper, {
+                x: () => -(horizontalWrapper.scrollWidth - window.innerWidth + 100),
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: horizontalSection,
+                    start: 'top top',
+                    end: () => `+=${horizontalWrapper.scrollWidth}`,
+                    scrub: 1,
+                    pin: true,
+                    anticipatePin: 1,
+                    invalidateOnRefresh: true
+                }
+            });
+        }
 
-/* ══════════════════════════════════════════
-   HERO GLOW PULSE
-══════════════════════════════════════════ */
-gsap.to('#hero-glow', {
-  scale: 1.35,
-  opacity: 0.55,
-  duration: 3.5,
-  ease: 'sine.inOut',
-  yoyo: true,
-  repeat: -1,
-});
+        // Marquee speed based on scroll
+        let marqueeSpeed = 1;
+        const marqueeContent = document.querySelector('.marquee-content');
 
-/* ══════════════════════════════════════════
-   HERO LETTERS
-══════════════════════════════════════════ */
-const titleEl = document.getElementById('heroTitle');
-const words = ['FONS', 'SOPHIAE', 'COLLECTIVE'];
-words.forEach((word, wi) => {
-  if (wi === 2) titleEl.appendChild(document.createElement('br'));
-  else if (wi > 0) {
-    const sp = document.createElement('span');
-    sp.className = 'word-space'; titleEl.appendChild(sp);
-  }
-  [...word].forEach(char => {
-    const wrap = document.createElement('span'); wrap.className = 'letter-wrap';
-    const inner = document.createElement('span'); inner.className = 'letter';
-    inner.textContent = char;
-    wrap.appendChild(inner); titleEl.appendChild(wrap);
-  });
-});
+        window.addEventListener('scroll', () => {
+            const scrollVelocity = Math.abs(ScrollTrigger.getAll()[0]?.getVelocity() || 0) / 1000;
+            marqueeSpeed = 1 + Math.min(scrollVelocity, 3);
+            marqueeContent.style.animationDuration = `${30 / marqueeSpeed}s`;
+        });
 
-/* HERO SCROLL HINT bounce */
-gsap.to('#scrollLine', {
-  scaleY: 0.6,
-  transformOrigin: 'top center',
-  duration: 1.1,
-  ease: 'power1.inOut',
-  yoyo: true,
-  repeat: -1,
-});
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    gsap.to(window, {
+                        duration: 1.5,
+                        scrollTo: { y: target, offsetY: 0 },
+                        ease: 'power3.inOut'
+                    });
+                }
+            });
+        });
 
-const heroTL = gsap.timeline({ delay: 0.4 });
-heroTL
-  .to('#heroEyebrow', { opacity: 1, y: 0, duration: 1, ease: 'power3.out' })
-  .to('.letter', {
-    y: '0%', duration: 1.15, ease: 'power4.out', stagger: 0.038,
-  }, '-=0.5')
-  .to('#heroTagline', { opacity: 1, duration: 1.2, ease: 'power2.out' }, '-=0.5')
-  .to('#scrollHint', { opacity: 1, duration: 1, ease: 'power2.out' }, '-=0.5');
+        // Audio visualizer randomization
+        const vizBars = document.querySelectorAll('.viz-bar');
+        setInterval(() => {
+            vizBars.forEach(bar => {
+                const randomHeight = 15 + Math.random() * 85;
+                bar.style.height = `${randomHeight}%`;
+            });
+        }, 1200);
 
-/* ══════════════════════════════════════════
-   WORD SPLITTER
-══════════════════════════════════════════ */
-function splitWords(el, text) {
-  const words = text.trim().split(/\s+/);
-  el.innerHTML = '';
-  words.forEach((word, i) => {
-    const mask = document.createElement('span'); mask.className = 'word-mask';
-    const inner = document.createElement('span'); inner.className = 'word-inner';
-    inner.textContent = word;
-    mask.appendChild(inner); el.appendChild(mask);
-    if (i < words.length - 1) el.appendChild(document.createTextNode(' '));
-  });
-  return el.querySelectorAll('.word-inner');
-}
+        // Magnetic effect for buttons
+        const magneticElements = document.querySelectorAll('.hover-trigger');
+        magneticElements.forEach(elem => {
+            elem.addEventListener('mousemove', (e) => {
+                const rect = elem.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
 
-/* ══════════════════════════════════════════
-   SECTION HEADER ANIMATION HELPER
-══════════════════════════════════════════ */
-function animateHeader(lineId, titleId, labelId, trigger) {
-  ScrollTrigger.create({
-    trigger,
-    start: 'top 72%',
-    onEnter: () => {
-      gsap.to(lineId, { scaleX: 1, duration: 1.1, ease: 'power3.out' });
-      gsap.to(titleId, {
-        scale: 1, filter: 'blur(0px)', opacity: 1,
-        duration: 1.5, ease: 'power3.out', delay: 0.15
-      });
-      if (labelId) gsap.to(labelId, { opacity: 1, x: 0, duration: 1, ease: 'power3.out', delay: 0.4 });
-    }
-  });
-}
+                gsap.to(elem, {
+                    x: x * 0.2,
+                    y: y * 0.2,
+                    duration: 0.3,
+                    ease: 'power2.out'
+                });
+            });
 
-/* ══════════════════════════════════════════
-   ABOUT
-══════════════════════════════════════════ */
-animateHeader('#aboutLine', '#aboutTitle', '#aboutLabelSmall', '#about');
+            elem.addEventListener('mouseleave', () => {
+                gsap.to(elem, {
+                    x: 0,
+                    y: 0,
+                    duration: 0.5,
+                    ease: 'elastic.out(1, 0.3)'
+                });
+            });
+        });
 
-// Parallax background
-gsap.to('#aboutParallaxBg', {
-  yPercent: 20,
-  scrollTrigger: {
-    trigger: '#about', start: 'top bottom', end: 'bottom top', scrub: true
-  }
-});
-
-// Parallax number
-gsap.to('#aboutParallaxNum', {
-  yPercent: -22,
-  scrollTrigger: {
-    trigger: '#about', start: 'top bottom', end: 'bottom top', scrub: true
-  }
-});
-
-// Word-by-word text reveal
-const aboutRaw = 'Founded by composer Sami Yusuf, Fons Sophiae Collective brings together master musicians from eight nations — China, Spain, France, Germany, the United Kingdom, Morocco, Azerbaijan, and Türkiye — in a union of ancient traditions.';
-const aboutWords = splitWords(document.getElementById('aboutText'), aboutRaw);
-
-ScrollTrigger.create({
-  trigger: '#about',
-  start: 'top 65%',
-  onEnter: () => {
-    gsap.to(aboutWords, {
-      y: '0%', duration: 0.9, ease: 'power3.out',
-      stagger: { each: 0.045, from: 'start' },
-      delay: 0.3,
-    });
-    gsap.to('#aboutCaption', { opacity: 1, y: 0, duration: 1, ease: 'power3.out', delay: 1.4 });
-  }
-});
-
-/* ══════════════════════════════════════════
-   ENSEMBLE — pinned horizontal scroll
-══════════════════════════════════════════ */
-const ensembleInner = document.getElementById('ensemble-inner');
-const ensembleTrack = document.getElementById('ensemble-track');
-const cards = gsap.utils.toArray('.instrument-card');
-const numCards = cards.length;
-
-const horizontalTween = gsap.to(ensembleTrack, {
-  x: () => -(numCards - 1) * window.innerWidth,
-  ease: 'none',
-  paused: true,
-});
-
-const ensembleST = ScrollTrigger.create({
-  trigger: ensembleInner,
-  start: 'top top',
-  end: () => `+=${(numCards - 1) * window.innerWidth}`,
-  pin: true,
-  scrub: 1.8,
-  animation: horizontalTween,
-  snap: {
-    snapTo: 1 / (numCards - 1),
-    duration: { min: 0.3, max: 0.65 },
-    delay: 0.05,
-    ease: 'power2.inOut',
-  },
-  invalidateOnRefresh: true,
-});
-
-// Per-card zoom + text slide in
-cards.forEach((card, i) => {
-  const bg = card.querySelector('.card-bg');
-  const num = card.querySelector('.card-num');
-  const name = card.querySelector('.card-name');
-  const origin = card.querySelector('.card-origin');
-
-  // Stagger in the text elements
-  ScrollTrigger.create({
-    trigger: card,
-    containerAnimation: horizontalTween,
-    start: 'left 75%',
-    onEnter: () => {
-      gsap.to(bg, { scale: 1.04, duration: 2.8, ease: 'power1.out' });
-      gsap.to([num, name, origin], {
-        x: 0, opacity: 1,
-        stagger: 0.14,
-        duration: 1.2,
-        ease: 'power3.out',
-        delay: 0.1,
-      });
-    },
-    onLeaveBack: () => {
-      gsap.to(bg, { scale: 1.12, duration: 1.2, ease: 'power2.in' });
-      gsap.to([num, name, origin], { x: -60, opacity: 0, duration: 0.5, stagger: 0.07 });
-    },
-  });
-});
-
-/* ══════════════════════════════════════════
-   CONCERTS
-══════════════════════════════════════════ */
-animateHeader('#concertsLine', '#concertsTitle', '#concertsLabelSmall', '#concerts');
-
-gsap.to('#concertsParallaxNum', {
-  yPercent: -20,
-  scrollTrigger: {
-    trigger: '#concerts', start: 'top bottom', end: 'bottom top', scrub: true
-  }
-});
-
-const concertRows = gsap.utils.toArray('.concert-row');
-concertRows.forEach((row, i) => {
-  const venue  = row.querySelector('.concert-venue');
-  const date   = row.querySelector('.concert-date');
-  const city   = row.querySelector('.concert-city');
-  const tag    = row.querySelector('.concert-tag');
-  const line   = row.querySelector('.concert-grow-line');
-
-  ScrollTrigger.create({
-    trigger: row,
-    start: 'top 88%',
-    onEnter: () => {
-      const tl = gsap.timeline({ delay: i * 0.1 });
-      tl.to(row,   { x: 0, opacity: 1, duration: 0.9, ease: 'power3.out' })
-        .to(venue,  { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }, '-=0.55')
-        .to(date,   { y: 0, opacity: 1, duration: 0.45, ease: 'power2.out' }, '-=0.35')
-        .to(city,   { y: 0, opacity: 1, duration: 0.45, ease: 'power2.out' }, '-=0.3')
-        .to(tag,    { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out' }, '-=0.25')
-        .to(line,   { scaleX: 1, duration: 1, ease: 'power3.out' }, '-=0.4');
-    }
-  });
-});
-
-/* ══════════════════════════════════════════
-   CONTACT
-══════════════════════════════════════════ */
-ScrollTrigger.create({
-  trigger: '#contact',
-  start: 'top 72%',
-  onEnter: () => {
-    gsap.to('#contactEyebrow', { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' });
-    gsap.to('#contactEmail',   { opacity: 1, y: 0, duration: 1.1, ease: 'power3.out', delay: 0.2 });
-    gsap.to('#contactRule',    { opacity: 0.6, duration: 1.4, ease: 'power2.out', delay: 0.6 });
-  }
-});
-
-/* ══════════════════════════════════════════
-   NAV dim on scroll down
-══════════════════════════════════════════ */
-let lastY = 0;
-lenis.on('scroll', ({ scroll }) => {
-  const nav = document.getElementById('nav');
-  nav.style.opacity = (scroll > 80 && scroll > lastY) ? '0.6' : '1';
-  lastY = scroll;
-});
-
-/* ══════════════════════════════════════════
-   SMOOTH ANCHOR LINKS
-══════════════════════════════════════════ */
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEventListener('click', e => {
-    e.preventDefault();
-    const target = document.querySelector(a.getAttribute('href'));
-    if (target) lenis.scrollTo(target, { offset: -60, duration: 2.2 });
-  });
-});
-
-/* ══════════════════════════════════════════
-   RESIZE
-══════════════════════════════════════════ */
-window.addEventListener('resize', () => ScrollTrigger.refresh());
-</script>
+        // Page load complete
+        window.addEventListener('load', () => {
+            document.body.style.opacity = '1';
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
 </body>
 </html>
